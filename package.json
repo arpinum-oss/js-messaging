@@ -1,0 +1,36 @@
+{
+  "name": "@arpinum/messaging",
+  "version": "0.0.1",
+  "description": "Collection of modules around messaging (message bus, message base class, etc.)",
+  "main": "./lib/index.js",
+  "files": [
+    "lib"
+  ],
+  "scripts": {
+    "eslint": "./node_modules/.bin/eslint .",
+    "mocha": "./node_modules/.bin/mocha lib",
+    "test": "npm run mocha; code=$?; npm run eslint; exit $((${code}+$?))",
+    "preversion": "npm test",
+    "postversion": "git push && git push --tags && npm publish"
+  },
+  "author": "Arpinum",
+  "license": "MIT",
+  "repository": "arpinum-js-engine/js-engine-messaing.git",
+  "keywords": [
+    "message",
+    "bus",
+    "event"
+  ],
+  "devDependencies": {
+    "chai": "4.1.0",
+    "eslint": "3.17.1",
+    "eslint-config-arpinum": "3.0.4",
+    "mocha": "3.4.2",
+    "sinon": "2.3.8"
+  },
+  "dependencies": {
+    "@arpinum/log": "^1.0.0",
+    "@arpinum/promise": "0.0.2",
+    "tcomb": "3.2.21"
+  }
+}
