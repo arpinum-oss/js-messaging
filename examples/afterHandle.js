@@ -11,7 +11,7 @@ let bus = new MessageBus({
 
 bus.register('ReturnText', message => message.payload.text);
 
-bus.broadcast({type: 'ReturnText', payload: {text: 'Hello world'}})
+bus.post({type: 'ReturnText', payload: {text: 'Hello world'}})
   .then(([text]) => console.log(text));
 
 // HELLO-WORLD
