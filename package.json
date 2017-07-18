@@ -29,7 +29,6 @@
     "sinon": "2.3.8"
   },
   "dependencies": {
-    "@arpinum/log": "^1.0.0",
     "@arpinum/promise": "0.0.2",
     "tcomb": "3.2.21"
   }
