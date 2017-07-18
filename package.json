@@ -15,7 +15,7 @@
   },
   "author": "Arpinum",
   "license": "MIT",
-  "repository": "arpinum-js-engine/js-engine-messaing.git",
+  "repository": "arpinum-js-engine/js-engine-messaging.git",
   "keywords": [
     "message",
     "bus",
