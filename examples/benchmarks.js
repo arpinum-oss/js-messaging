@@ -28,5 +28,3 @@ function post() {
   }
   return bus.post({type: 'Handle'}).then(post);
 }
-
-
