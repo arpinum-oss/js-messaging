@@ -31,7 +31,7 @@
     "watch": "1.0.2"
   },
   "dependencies": {
-    "@arpinum/promising": "0.0.4",
+    "@arpinum/promising": "0.0.5",
     "tcomb": "3.2.21"
   }
 }
