@@ -1,6 +1,6 @@
 {
   "name": "@arpinum/messaging",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Collection of modules around messaging (message bus, message base class, etc.)",
   "main": "./lib/index.js",
   "files": [
