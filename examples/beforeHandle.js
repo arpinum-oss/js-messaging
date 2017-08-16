@@ -2,7 +2,7 @@
 
 const {MessageBus} = require('../lib');
 
-let bus = new MessageBus({
+const bus = new MessageBus({
   beforeHandle: [
     withUpperCaseText,
     withoutSpaceInText
