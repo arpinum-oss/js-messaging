@@ -28,10 +28,10 @@
     "eslint-config-arpinum": "4.0.0",
     "mocha": "3.5.0",
     "sinon": "3.2.1",
+    "tcomb": "3.2.23",
     "watch": "1.0.2"
   },
   "dependencies": {
-    "@arpinum/promising": "1.0.0",
-    "tcomb": "3.2.23"
+    "@arpinum/promising": "1.0.0"
   }
 }
