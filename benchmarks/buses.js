@@ -1,6 +1,7 @@
 'use strict';
 
-const {MessageBus, QuickBus} = require('../lib');
+const {MessageBus} = require('../lib');
+const QuickBus = require('../lib/quickBus');
 
 const postCount = 100000;
 
