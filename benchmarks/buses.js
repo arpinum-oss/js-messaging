@@ -1,12 +1,12 @@
 'use strict';
 
-const {MessageBus} = require('../lib');
-const QuickBus = require('../lib/quickBus');
+const {createMessageBus} = require('../lib');
+const createQuickBus = require('../lib/quickBus');
 
 const postCount = 100000;
 
-benchWith(new MessageBus({log: () => undefined}))
-  .then(() => benchWith(new QuickBus()));
+benchWith(createMessageBus({log: () => undefined}))
+  .then(() => benchWith(createQuickBus()));
 
 function benchWith(bus) {
   let handleCount = 0;

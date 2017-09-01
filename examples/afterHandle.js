@@ -1,8 +1,8 @@
 'use strict';
 
-const {MessageBus} = require('../lib');
+const {createMessageBus} = require('../lib');
 
-const bus = new MessageBus({
+const bus = createMessageBus({
   afterHandle: [
     upperCaseText,
     withoutSpace
