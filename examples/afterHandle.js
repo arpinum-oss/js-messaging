@@ -2,24 +2,16 @@
 
 const {createMessageBus} = require('../lib');
 
+const upperCaseText = text => text.toUpperCase();
+const withoutSpace = text => text.replace(' ', '-');
+
 const bus = createMessageBus({
   afterHandle: [
     upperCaseText,
     withoutSpace
   ]
 });
-
-bus.register('ReturnText', message => message.payload.text);
-
-bus.post({type: 'ReturnText', payload: {text: 'Hello world'}})
+bus.register('ReturnText', message => message.payload);
+bus.post({type: 'ReturnText', payload: 'Hello world'})
   .then(([text]) => console.log(text));
-
 // HELLO-WORLD
-
-function upperCaseText(text) {
-  return text.toUpperCase();
-}
-
-function withoutSpace(text) {
-  return text.replace(' ', '-');
-}

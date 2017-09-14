@@ -18,12 +18,16 @@ const {createMessageBus} = require('@arpinum/messaging');
 
 const bus = createMessageBus();
 
-bus.register('PrintText', message => console.log(message.payload.text));
+bus.register('PrintText', message => console.log(message.payload));
 
-bus.post({type: 'PrintText', payload: {text: 'Hello world'}});
+bus.post({type: 'PrintText', payload: 'Hello world'});
 
 // Hello world
 ```
+
+## Docs
+
+* [API](docs/api.md)
 
 ## License
 
