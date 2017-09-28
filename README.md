@@ -17,9 +17,7 @@ npm install @arpinum/messaging --save
 const {createMessageBus} = require('@arpinum/messaging');
 
 const bus = createMessageBus();
-
 bus.register('PrintText', message => console.log(message.payload));
-
 bus.post({type: 'PrintText', payload: 'Hello world'});
 
 // Hello world
