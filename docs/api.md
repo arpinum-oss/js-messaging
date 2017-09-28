@@ -192,7 +192,7 @@ const message = MessageContract({type: 'UserSignedUp', payload: {login: 'john'}}
 ```
 
 
-[MessageBus]: #message-bus
+[MessageBus]: #message-bus-object
 [message contract]: #message-contract
 [CQRS]: https://martinfowler.com/bliki/CQRS.html
 [tcomb]: https://github.com/gcanti/tcomb
