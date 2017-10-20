@@ -1,7 +1,7 @@
 # createMessageBus(options)
 
 * `options` `Object`
-  * `log` `function` Function to call when bus needs to print some logs. Defaults to `console.log`.
+  * `log` `function` Function to call when bus needs to print some logs. Does nothing by default.
   * `exclusiveHandlers` `boolean` Allows only one handler per message. Defaults to false.
   * `ensureAtLeastOneHandler` `boolean` Throws error if a posted message is not handled. Defaults to false.
   * `handlersConcurrency` `number` Limits handler execution in parallel. Defaults to 3.
