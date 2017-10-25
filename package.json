@@ -24,14 +24,14 @@
   ],
   "devDependencies": {
     "chai": "4.1.2",
-    "eslint": "4.5.0",
-    "eslint-config-arpinum": "4.0.0",
-    "mocha": "3.5.0",
-    "sinon": "3.2.1",
-    "tcomb": "3.2.23",
+    "eslint": "4.9.0",
+    "eslint-config-arpinum": "4.1.1",
+    "mocha": "4.0.1",
+    "sinon": "4.0.2",
+    "tcomb": "3.2.24",
     "watch": "1.0.2"
   },
   "dependencies": {
-    "@arpinum/promising": "1.0.0"
+    "@arpinum/promising": "2.0.0"
   }
 }
