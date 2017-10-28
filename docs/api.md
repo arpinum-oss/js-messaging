@@ -5,6 +5,8 @@
   * `exclusiveHandlers` `boolean` Allows only one handler per message. Defaults to false.
   * `ensureAtLeastOneHandler` `boolean` Throws error if a posted message is not handled. Defaults to false.
   * `handlersConcurrency` `number` Limits handler execution in parallel. Defaults to 3.
+  * `beforePost` `Array<function>` Execute functions before posting a message in order to apply some transformations to the message.
+  * `afterPost` `Array<function>` Execute functions after posting (and fully handling) a message in order to apply some transformations to the results.
   * `beforeHandle` `Array<function>` Execute functions before handling a message in order to apply some transformations to the message.
   * `afterHandle` `Array<function>` Execute functions after handling a message in order to apply some transformations to the result.
 * returns: `MessageBus`
