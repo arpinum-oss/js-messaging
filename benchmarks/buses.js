@@ -31,10 +31,9 @@ function benchWith(bus) {
   function printStatistics() {
     const end = new Date();
     const duration = end - start;
-    console.log(
-      `${handleCount} messages handled in ${duration} ms with ${
-        bus.constructor.name
-      }`
-    );
+    const message =
+      `${handleCount} messages handled in ${duration} ms` +
+      ` with ${bus.constructor.name}`;
+    console.log(message);
   }
 }
