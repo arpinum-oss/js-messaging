@@ -1,12 +1,13 @@
 'use strict';
 
-const {createMessageBus} = require('../lib');
+const { createMessageBus } = require('../lib');
 const createQuickBus = require('../lib/quickBus');
 
 const postCount = 100000;
 
-benchWith(createMessageBus({log: () => undefined}))
-  .then(() => benchWith(createQuickBus()));
+benchWith(createMessageBus({ log: () => undefined })).then(() =>
+  benchWith(createQuickBus())
+);
 
 function benchWith(bus) {
   let handleCount = 0;
@@ -24,13 +25,16 @@ function benchWith(bus) {
     if (handleCount >= postCount) {
       return Promise.resolve();
     }
-    return bus.post({type: 'Handle'}).then(post);
+    return bus.post({ type: 'Handle' }).then(post);
   }
 
   function printStatistics() {
     const end = new Date();
     const duration = end - start;
-    console.log(`${handleCount} messages handled in ${duration} ms with ${bus.constructor.name}`);
+    console.log(
+      `${handleCount} messages handled in ${duration} ms with ${
+        bus.constructor.name
+      }`
+    );
   }
 }
-
