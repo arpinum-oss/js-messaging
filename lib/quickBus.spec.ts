@@ -1,6 +1,4 @@
-'use strict';
-
-const createQuickBus = require('./quickBus');
+import { createQuickBus } from './quickBus';
 
 describe('Quick bus', () => {
   let bus;
@@ -9,7 +7,7 @@ describe('Quick bus', () => {
     bus = createQuickBus();
   });
 
-  context('while posting', () => {
+  describe('while posting', () => {
     it('should post the message to the handlers', () => {
       bus.register('MyMessage', () => Promise.resolve('first handler'));
       bus.register('MyMessage', () => Promise.resolve('second handler'));
@@ -17,7 +15,7 @@ describe('Quick bus', () => {
       const post = bus.post({ type: 'MyMessage' });
 
       return post.then(result => {
-        result.should.deep.equal(['first handler', 'second handler']);
+        expect(result).toEqual(['first handler', 'second handler']);
       });
     });
 
@@ -33,7 +31,7 @@ describe('Quick bus', () => {
       const post = bus.post({ type: 'MyRightMessage' });
 
       return post.then(() => {
-        posts.should.deep.equal(['first handler']);
+        expect(posts).toEqual(['first handler']);
       });
     });
 
@@ -42,7 +40,7 @@ describe('Quick bus', () => {
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
-        rejection => rejection.message.should.equal('Missing message')
+        rejection => expect(rejection.message).toEqual('Missing message')
       );
     });
 
@@ -51,28 +49,28 @@ describe('Quick bus', () => {
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
-        rejection => rejection.message.should.equal('Missing message type')
+        rejection => expect(rejection.message).toEqual('Missing message type')
       );
     });
   });
 
-  context('while registering', () => {
+  describe('while registering', () => {
     it('should ensure message type is defined', () => {
       const register = () => bus.register(null, () => undefined);
 
-      register.should.throw(Error, 'Missing type');
+      expect(register).toThrow('Missing type');
     });
 
     it('should ensure handler is defined', () => {
       const register = () => bus.register('MyMessage');
 
-      register.should.throw(Error, 'Missing handler');
+      expect(register).toThrow('Missing handler');
     });
 
     it('should ensure handler is a function', () => {
       const register = () => bus.register('MyMessage', 3);
 
-      register.should.throw(Error, 'Handler must be a function');
+      expect(register).toThrow('Handler must be a function');
     });
   });
 });

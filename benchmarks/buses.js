@@ -1,7 +1,7 @@
 'use strict';
 
-const { createMessageBus } = require('../lib');
-const createQuickBus = require('../lib/quickBus');
+const { createMessageBus } = require('../build');
+const { createQuickBus } = require('../build/quickBus');
 
 const postCount = 100000;
 
@@ -34,9 +34,7 @@ function benchWith(bus, name) {
   function printStatistics() {
     const end = new Date();
     const duration = end - start;
-    const message = `${handleCount} messages handled in ${duration} ms with ${
-      name
-    }`;
+    const message = `${handleCount} messages handled in ${duration} ms with ${name}`;
     console.log(message);
   }
 }

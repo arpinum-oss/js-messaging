@@ -1,4 +1,0 @@
---require ./test/helper.js
---colors
---reporter dot
---recursive

@@ -1,6 +1,6 @@
 'use strict';
 
-const { createMessageBus } = require('../lib');
+const { createMessageBus } = require('../build');
 
 const withUpperCaseText = m =>
   Object.assign({}, m, { payload: m.payload.toUpperCase() });

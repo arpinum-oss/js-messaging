@@ -1,6 +1,6 @@
 'use strict';
 
-const { createMessageBus } = require('../lib');
+const { createMessageBus } = require('../build');
 
 const upperCaseText = text => text.toUpperCase();
 const withoutSpace = text => text.replace(' ', '-');

@@ -1,6 +1,6 @@
 'use strict';
 
-const { createMessageBus } = require('../lib');
+const { createMessageBus } = require('../build');
 
 const bus = createMessageBus();
 const unregister = bus.register('PrintText', message =>

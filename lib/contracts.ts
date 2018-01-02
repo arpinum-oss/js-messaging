@@ -1,4 +1,4 @@
-function contracts(t) {
+export function contracts(t: any) {
   const MessageBusContract = t.interface(
     {
       postAll: t.Function,
@@ -23,5 +23,3 @@ function contracts(t) {
     MessageContract
   };
 }
-
-module.exports = contracts;

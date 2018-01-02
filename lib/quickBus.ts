@@ -1,14 +1,14 @@
-'use strict';
+import { Message, MessageHandler } from './types';
 
-function createQuickBus() {
-  const handlerMap = new Map();
+export function createQuickBus() {
+  const handlerMap = new Map<string, MessageHandler[]>();
 
   return {
     post,
     register
   };
 
-  function post(message) {
+  function post(message: Message) {
     try {
       validateArgs();
     } catch (e) {
@@ -27,7 +27,7 @@ function createQuickBus() {
     }
   }
 
-  function register(type, handler) {
+  function register(type: string, handler: MessageHandler) {
     validateArgs();
     const handlers = (handlerMap.get(type) || []).concat(handler);
     handlerMap.set(type, handlers);
@@ -45,5 +45,3 @@ function createQuickBus() {
     }
   }
 }
-
-module.exports = createQuickBus;
