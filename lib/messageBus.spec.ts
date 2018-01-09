@@ -152,8 +152,10 @@ describe('Message bus', () => {
         expect(posts).toEqual(['handler1']);
       });
     });
+  });
 
-    it('should post multiple messages', () => {
+  describe('while posting multiple messages at once', () => {
+    it('should post all messages', () => {
       const posts = [];
       bus.register('message1', () => {
         posts.push('handler 1');
@@ -177,6 +179,35 @@ describe('Message bus', () => {
       return post.then(results => {
         expect(posts).toEqual(['handler 1', 'handler 2', 'handler 3']);
         expect(results).toEqual([['handler 1'], ['handler 2'], ['handler 3']]);
+      });
+    });
+
+    it('could post no message', () => {
+      const posts = [];
+      bus.register('message1', () => {
+        posts.push('handler 1');
+        return 'handler 1';
+      });
+      const post = bus.postAll([]);
+
+      return post.then(results => {
+        expect(posts).toEqual([]);
+        expect(results).toEqual([]);
+      });
+    });
+
+    it('should post only one message', () => {
+      const posts = [];
+      bus.register('message1', () => {
+        posts.push('handler 1');
+        return 'handler 1';
+      });
+
+      const post = bus.postAll([{ type: 'message1' }]);
+
+      return post.then(results => {
+        expect(posts).toEqual(['handler 1']);
+        expect(results).toEqual([['handler 1']]);
       });
     });
   });

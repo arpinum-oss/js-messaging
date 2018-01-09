@@ -42,7 +42,7 @@
     "typescript": "2.6.2"
   },
   "dependencies": {
-    "@arpinum/promising": "2.2.0"
+    "@arpinum/promising": "2.2.2"
   },
   "jest": {
     "transform": {

@@ -1,8 +1,4 @@
-import {
-  compose,
-  mapWithOptions as mapToPromises,
-  wrap
-} from '@arpinum/promising';
+import { compose, mapWithOptions as mapToPromises } from '@arpinum/promising';
 
 import { Message, MessageHandler } from './types';
 
@@ -31,11 +27,19 @@ const defaultOptions: MessageBusOptions = {
 export class MessageBus {
   private options: MessageBusOptions;
   private handlerMap: Map<string, MessageHandler[]>;
+  private beforeHandle: (m: Message) => Promise<Message>;
+  private afterHandle: (r: any) => Promise<any>;
+  private beforePost: (m: Message) => Promise<Message>;
+  private afterPost: (r: any) => Promise<any>;
 
   constructor(options: MessageBusOptions = {}) {
     this.validateOptions(options);
     this.options = Object.assign({}, defaultOptions, options);
     this.handlerMap = new Map();
+    this.beforeHandle = compose(this.options.beforeHandle);
+    this.afterHandle = compose(this.options.afterHandle);
+    this.beforePost = compose(this.options.beforePost);
+    this.afterPost = compose(this.options.afterPost);
   }
 
   private validateOptions(options: MessageBusOptions) {
@@ -81,6 +85,12 @@ export class MessageBus {
   }
 
   public postAll(messages: Message[]) {
+    if (messages.length === 0) {
+      return Promise.resolve([]);
+    }
+    if (messages.length === 1) {
+      return this.post(messages[0]).then(r => [r]);
+    }
     return mapToPromises(
       message => this.post(message),
       { concurrency: 3 },
@@ -90,11 +100,10 @@ export class MessageBus {
 
   public post(message: Message) {
     const self = this;
-    return wrap(validateMessage as any)(message)
-      .then(() => message)
-      .then(compose(this.options.beforePost))
+    return validatedMessage(message)
+      .then(this.beforePost)
       .then(postToHandlers)
-      .then(compose(this.options.afterPost));
+      .then(this.afterPost);
 
     function postToHandlers(messageToPost: Message) {
       self.options.log(`Posting ${messageToPost.type}`);
@@ -106,13 +115,14 @@ export class MessageBus {
       return postForStandardHandlers(messageToPost, handlers);
     }
 
-    function validateMessage(messageToValidate: Message) {
+    function validatedMessage(messageToValidate: Message): Promise<Message> {
       if (!messageToValidate) {
-        throw new Error('Missing message');
+        return Promise.reject(new Error('Missing message'));
       }
       if (!messageToValidate.type) {
-        throw new Error('Missing message type');
+        return Promise.reject(new Error('Missing message type'));
       }
+      return Promise.resolve(message);
     }
 
     function checkHandlerRequirements(
@@ -141,6 +151,9 @@ export class MessageBus {
       if (handlers.length === 0) {
         return Promise.resolve([]);
       }
+      if (handlers.length === 1) {
+        return self.handle(messageToPost, handlers[0]).then(r => [r]);
+      }
       const handleMessage = (handler: MessageHandler) =>
         self.handle(messageToPost, handler);
       return mapToPromises(
@@ -152,9 +165,9 @@ export class MessageBus {
   }
 
   private handle(message: Message, handler: MessageHandler) {
-    return compose(this.options.beforeHandle)(message)
-      .then(wrap(handler))
-      .then(compose(this.options.afterHandle));
+    return this.beforeHandle(message)
+      .then(handler)
+      .then(this.afterHandle);
   }
 
   public register(type: string, handler: MessageHandler) {
