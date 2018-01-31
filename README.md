@@ -1,4 +1,4 @@
-# @arpinum/messaging [![Build Status](https://travis-ci.org/arpinum/js-messaging.svg?branch=master)](https://travis-ci.org/arpinum/js-messaging)
+# @arpinum/messaging [![Build Status](https://travis-ci.org/arpinum-oss/js-messaging.svg?branch=master)](https://travis-ci.org/arpinum-oss/js-messaging)
 
 > Life is a little like a message in a bottle, to be carried by the winds and the tides.
 > <cite>Gene Tierney</cite>
