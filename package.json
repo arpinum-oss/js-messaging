@@ -8,10 +8,10 @@
     "build"
   ],
   "scripts": {
-    "tslint": "tslint --fix lib/**/*.ts",
+    "tslint": "tslint --fix 'lib/**/*.ts'",
     "jest": "jest",
     "testw": "jest --watch",
-    "prettier": "prettier --write \"**/*.ts\"",
+    "prettier": "prettier --write '**/*.ts'",
     "compile": "tsc --noEmit",
     "test": "run-s -c compile jest tslint",
     "prebuild": "rm -rf ./build",
