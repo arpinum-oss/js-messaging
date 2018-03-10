@@ -1,5 +1,3 @@
-'use strict';
-
 import * as t from 'tcomb';
 
 import { wrap } from '@arpinum/promising';

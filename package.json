@@ -11,7 +11,7 @@
     "tslint": "tslint --fix 'lib/**/*.ts'",
     "jest": "jest",
     "testw": "jest --watch",
-    "prettier": "prettier --write '**/*.ts'",
+    "prettier": "prettier --write '**/*.{js,json,md,ts}'",
     "compile": "tsc --noEmit",
     "test": "run-s -c compile jest tslint",
     "prebuild": "rm -rf ./build",
