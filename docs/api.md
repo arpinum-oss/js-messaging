@@ -5,10 +5,10 @@
   * `exclusiveHandlers` `boolean` Allows only one handler per message. Defaults to false.
   * `ensureAtLeastOneHandler` `boolean` Throws error if a posted message is not handled. Defaults to false.
   * `handlersConcurrency` `number` Limits handler execution in parallel. Defaults to 3.
-  * `beforePost` `Array<function>` Execute functions before posting a message in order to apply some transformations to the message.
-  * `afterPost` `Array<function>` Execute functions after posting (and fully handling) a message in order to apply some transformations to the results.
-  * `beforeHandle` `Array<function>` Execute functions before handling a message in order to apply some transformations to the message.
-  * `afterHandle` `Array<function>` Execute functions after handling a message in order to apply some transformations to the result.
+  * `beforePost` `function[]` Execute functions before posting a message in order to apply some transformations to the message.
+  * `afterPost` `function[]` Execute functions after posting (and fully handling) a message in order to apply some transformations to the results.
+  * `beforeHandle` `function[]` Execute functions before handling a message in order to apply some transformations to the message.
+  * `afterHandle` `function[]` Execute functions after handling a message in order to apply some transformations to the result.
 * returns: `MessageBus`
 
 Creates a [MessageBus] object that posts messages to registered handlers.
@@ -81,7 +81,7 @@ A message should be a plain JavaScript object, preferably immutable.
 
 ## bus.post(message)
 
-* `message` `object` Message to post. Must match [message contract].
+* `message` `Object` Message to post. Must match [message contract].
 * returns: `Promise` Contains an array with all handlers results or a single result if handlers are exclusive.
 
 Posts a message to registered handlers.
@@ -97,7 +97,7 @@ bus.post({type: 'PrintText', payload: 'Hello world'});
 
 ## bus.postAll(messages)
 
-* `message` `Array<object>` Messages to post. They all must match [message contract].
+* `message` `Object[]` Messages to post. They all must match [message contract].
 * returns: `Promise` Contains an array with all post results. See `bus.post` method.
 
 Posts multiple messages to respective registered handlers.
