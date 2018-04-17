@@ -44,6 +44,12 @@ describe('Message bus', () => {
       expect(creation).toThrow('handlersConcurrency must be a number');
     });
 
+    it('should ensure beforePost is an array', () => {
+      const creation = () => createMessageBus({ beforePost: '3' } as any);
+
+      expect(creation).toThrow('beforePost must be an array');
+    });
+
     it('should ensure beforeHandle is an array', () => {
       const creation = () => createMessageBus({ beforeHandle: '3' } as any);
 
@@ -55,6 +61,12 @@ describe('Message bus', () => {
 
       expect(creation).toThrow('afterHandle must be an array');
     });
+
+    it('should ensure afterPost is an array', () => {
+      const creation = () => createMessageBus({ afterPost: '3' } as any);
+
+      expect(creation).toThrow('afterPost must be an array');
+    });
   });
 
   describe('while posting', () => {
@@ -63,7 +75,8 @@ describe('Message bus', () => {
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
-        rejection => expect(rejection.message).toEqual('Missing message')
+        rejection =>
+          expect(rejection.message).toEqual('message must be present')
       );
     });
 
@@ -72,7 +85,18 @@ describe('Message bus', () => {
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
-        rejection => expect(rejection.message).toEqual('Missing message type')
+        rejection =>
+          expect(rejection.message).toEqual('message#type must be present')
+      );
+    });
+
+    it('should ensure message type is a string', () => {
+      const post = bus.post({ type: 4 } as any);
+
+      return post.then(
+        () => Promise.reject(new Error('Should fail')),
+        rejection =>
+          expect(rejection.message).toEqual('message#type must be a string')
       );
     });
 
@@ -214,13 +238,13 @@ describe('Message bus', () => {
     it('should ensure message type is defined', () => {
       const register = () => bus.register(null, () => undefined);
 
-      expect(register).toThrow('Missing type');
+      expect(register).toThrow('type must be present');
     });
 
     it('should ensure handler is defined', () => {
       const register = () => bus.register('MyMessage', undefined);
 
-      expect(register).toThrow('Missing handler');
+      expect(register).toThrow('handler must be present');
     });
 
     it('should ensure handler is a function', () => {
@@ -260,7 +284,7 @@ describe('Message bus', () => {
     it('should ensure types are strings', () => {
       const unregisterAll = () => bus.unregisterAll('MyMessage', 3);
 
-      expect(unregisterAll).toThrow('types must be strings');
+      expect(unregisterAll).toThrow('types[1] must be a string');
     });
 
     it("won't post a message to them anymore", () => {

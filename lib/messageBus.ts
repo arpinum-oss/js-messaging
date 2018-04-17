@@ -1,3 +1,4 @@
+import { assert } from '@arpinum/defender';
 import { compose, mapWithOptions as mapToPromises } from '@arpinum/promising';
 
 import { Message, MessageHandler } from './types';
@@ -43,45 +44,23 @@ export class MessageBus {
   }
 
   private validateOptions(options: MessageBusOptions) {
-    if (options.log !== undefined && notA(options.log, 'function')) {
-      throw new Error('log must be a function');
-    }
-    if (
-      options.exclusiveHandlers !== undefined &&
-      notA(options.exclusiveHandlers, 'boolean')
-    ) {
-      throw new Error('exclusiveHandlers must be a boolean');
-    }
-    if (
-      options.ensureAtLeastOneHandler !== undefined &&
-      notA(options.ensureAtLeastOneHandler, 'boolean')
-    ) {
-      throw new Error('ensureAtLeastOneHandler must be a boolean');
-    }
-    if (
-      options.handlersConcurrency !== undefined &&
-      notA(options.handlersConcurrency, 'number')
-    ) {
-      throw new Error('handlersConcurrency must be a number');
-    }
-    if (
-      options.beforePost !== undefined &&
-      !Array.isArray(options.beforePost)
-    ) {
-      throw new Error('beforePost must be an array');
-    }
-    if (
-      options.beforeHandle !== undefined &&
-      !Array.isArray(options.beforeHandle)
-    ) {
-      throw new Error('beforeHandle must be an array');
-    }
-    if (
-      options.afterHandle !== undefined &&
-      !Array.isArray(options.afterHandle)
-    ) {
-      throw new Error('afterHandle must be an array');
-    }
+    assert(options.log, 'options#log').toBeAFunction();
+    assert(
+      options.exclusiveHandlers,
+      'options#exclusiveHandlers'
+    ).toBeABoolean();
+    assert(
+      options.ensureAtLeastOneHandler,
+      'options#ensureAtLeastOneHandler'
+    ).toBeABoolean();
+    assert(
+      options.handlersConcurrency,
+      'options#handlersConcurrency'
+    ).toBeANumber();
+    assert(options.beforePost, 'options#beforePost').toBeAnArray();
+    assert(options.beforeHandle, 'options#beforeHandle').toBeAnArray();
+    assert(options.afterHandle, 'options#afterHandle').toBeAnArray();
+    assert(options.afterPost, 'options#afterPost').toBeAnArray();
   }
 
   public postAll(messages: Message[]) {
@@ -116,13 +95,15 @@ export class MessageBus {
     }
 
     function validatedMessage(messageToValidate: Message): Promise<Message> {
-      if (!messageToValidate) {
-        return Promise.reject(new Error('Missing message'));
+      try {
+        assert(messageToValidate, 'message').toBePresent();
+        assert(messageToValidate.type, 'message#type')
+          .toBePresent()
+          .toBeAString();
+        return Promise.resolve(message);
+      } catch (e) {
+        return Promise.reject(e);
       }
-      if (!messageToValidate.type) {
-        return Promise.reject(new Error('Missing message type'));
-      }
-      return Promise.resolve(message);
     }
 
     function checkHandlerRequirements(
@@ -181,15 +162,10 @@ export class MessageBus {
     return unregister;
 
     function validateArgs() {
-      if (!type) {
-        throw new Error('Missing type');
-      }
-      if (!handler) {
-        throw new Error('Missing handler');
-      }
-      if (notA(handler, 'function')) {
-        throw new Error('handler must be a function');
-      }
+      assert(type, 'type').toBePresent();
+      assert(handler, 'handler')
+        .toBePresent()
+        .toBeAFunction();
     }
 
     function ensureHandlerExclusivity() {
@@ -214,23 +190,13 @@ export class MessageBus {
     types.forEach(type => this.updateHandlers(type, []));
 
     function validateArgs() {
-      types.forEach(type => {
-        if (notA(type, 'string')) {
-          throw new Error('types must be strings');
-        }
-      });
+      types.forEach((type, i) => assert(type, `types[${i}]`).toBeAString());
     }
   }
 
   public handlerCount(type: string) {
-    validateArgs();
+    assert(type, 'type').toBeAString();
     return this.handlersFor(type).length;
-
-    function validateArgs() {
-      if (notA(type, 'string')) {
-        throw new Error('type must be a string');
-      }
-    }
   }
 
   private handlersFor(messageType: string) {
@@ -244,8 +210,4 @@ export class MessageBus {
 
 export function createMessageBus(options: MessageBusOptions = {}): MessageBus {
   return new MessageBus(options);
-}
-
-function notA(value: any, type: string) {
-  return value === null || typeof value !== type;
 }

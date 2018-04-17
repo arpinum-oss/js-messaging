@@ -42,6 +42,7 @@
     "typescript": "2.6.2"
   },
   "dependencies": {
+    "@arpinum/defender": "0.0.5",
     "@arpinum/promising": "2.2.2"
   },
   "jest": {

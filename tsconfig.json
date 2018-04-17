@@ -11,16 +11,8 @@
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "types": [
-      "jest"
-    ]
+    "types": ["jest"]
   },
-  "include": [
-    "./lib/**/*"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts",
-    "**/*.spec.js"
-  ]
+  "include": ["./lib/**/*"],
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.js"]
 }
