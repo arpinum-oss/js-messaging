@@ -1,14 +1,14 @@
 import { Message, MessageHandler } from './types';
 
 export function createQuickBus() {
-  const handlerMap = new Map<string, MessageHandler[]>();
+  const handlerMap = new Map<string, Array<MessageHandler<any>>>();
 
   return {
     post,
     register
   };
 
-  function post(message: Message) {
+  function post(message: Message<any>) {
     try {
       validateArgs();
     } catch (e) {
@@ -27,7 +27,7 @@ export function createQuickBus() {
     }
   }
 
-  function register(type: string, handler: MessageHandler) {
+  function register(type: string, handler: MessageHandler<any>) {
     validateArgs();
     const handlers = (handlerMap.get(type) || []).concat(handler);
     handlerMap.set(type, handlers);

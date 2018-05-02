@@ -27,10 +27,10 @@ const defaultOptions: MessageBusOptions = {
 
 export class MessageBus {
   private options: MessageBusOptions;
-  private handlerMap: Map<string, MessageHandler[]>;
-  private beforeHandle: (m: Message) => Promise<Message>;
+  private handlerMap: Map<string, Array<MessageHandler<any>>>;
+  private beforeHandle: (m: Message<any>) => Promise<Message<any>>;
   private afterHandle: (r: any) => Promise<any>;
-  private beforePost: (m: Message) => Promise<Message>;
+  private beforePost: (m: Message<any>) => Promise<Message<any>>;
   private afterPost: (r: any) => Promise<any>;
 
   constructor(options: MessageBusOptions = {}) {
@@ -63,7 +63,7 @@ export class MessageBus {
     assert(options.afterPost, 'options#afterPost').toBeAnArray();
   }
 
-  public postAll(messages: Message[]) {
+  public postAll(messages: Array<Message<any>>) {
     if (messages.length === 0) {
       return Promise.resolve([]);
     }
@@ -77,14 +77,14 @@ export class MessageBus {
     );
   }
 
-  public post(message: Message) {
+  public post(message: Message<any>) {
     const self = this;
     return validatedMessage(message)
       .then(this.beforePost)
       .then(postToHandlers)
       .then(this.afterPost);
 
-    function postToHandlers(messageToPost: Message) {
+    function postToHandlers(messageToPost: Message<any>) {
       self.options.log(`Posting ${messageToPost.type}`);
       const handlers = self.handlersFor(messageToPost.type);
       checkHandlerRequirements(messageToPost, handlers);
@@ -94,7 +94,9 @@ export class MessageBus {
       return postForStandardHandlers(messageToPost, handlers);
     }
 
-    function validatedMessage(messageToValidate: Message): Promise<Message> {
+    function validatedMessage(
+      messageToValidate: Message<any>
+    ): Promise<Message<any>> {
       try {
         assert(messageToValidate, 'message').toBePresent();
         assert(messageToValidate.type, 'message#type')
@@ -107,8 +109,8 @@ export class MessageBus {
     }
 
     function checkHandlerRequirements(
-      messageToCheck: Message,
-      handlers: MessageHandler[]
+      messageToCheck: Message<any>,
+      handlers: Array<MessageHandler<any>>
     ) {
       if (handlers.length === 0 && self.options.ensureAtLeastOneHandler) {
         throw new Error(`No handler for ${messageToCheck.type}`);
@@ -116,8 +118,8 @@ export class MessageBus {
     }
 
     function postForExclusiveHandlers(
-      messageToPost: Message,
-      handlers: MessageHandler[]
+      messageToPost: Message<any>,
+      handlers: Array<MessageHandler<any>>
     ) {
       if (handlers.length === 0) {
         return Promise.resolve();
@@ -126,8 +128,8 @@ export class MessageBus {
     }
 
     function postForStandardHandlers(
-      messageToPost: Message,
-      handlers: MessageHandler[]
+      messageToPost: Message<any>,
+      handlers: Array<MessageHandler<any>>
     ) {
       if (handlers.length === 0) {
         return Promise.resolve([]);
@@ -135,7 +137,7 @@ export class MessageBus {
       if (handlers.length === 1) {
         return self.handle(messageToPost, handlers[0]).then(r => [r]);
       }
-      const handleMessage = (handler: MessageHandler) =>
+      const handleMessage = (handler: MessageHandler<any>) =>
         self.handle(messageToPost, handler);
       return mapToPromises(
         handleMessage,
@@ -145,13 +147,13 @@ export class MessageBus {
     }
   }
 
-  private handle(message: Message, handler: MessageHandler) {
+  private handle(message: Message<any>, handler: MessageHandler<any>) {
     return this.beforeHandle(message)
       .then(handler)
       .then(this.afterHandle);
   }
 
-  public register(type: string, handler: MessageHandler) {
+  public register(type: string, handler: MessageHandler<any>) {
     const self = this;
     validateArgs();
     this.options.log(`Registering to ${type}`);
@@ -203,7 +205,10 @@ export class MessageBus {
     return this.handlerMap.get(messageType) || [];
   }
 
-  private updateHandlers(messageType: string, handlers: MessageHandler[]) {
+  private updateHandlers(
+    messageType: string,
+    handlers: Array<MessageHandler<any>>
+  ) {
     this.handlerMap.set(messageType, handlers);
   }
 }

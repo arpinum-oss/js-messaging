@@ -1,6 +1,6 @@
-export interface Message {
+export interface Message<T> {
   type: string;
-  payload?: any;
+  payload?: T;
 }
 
-export type MessageHandler = (message: Message) => any;
+export type MessageHandler<T> = (message: Message<T>) => any;
