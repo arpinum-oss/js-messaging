@@ -17,7 +17,7 @@
     "prebuild": "rm -rf ./build",
     "build": "tsc",
     "preversion": "run-s test build",
-    "postversion": "git push && git push --tags && npm publish"
+    "postversion": "git push && git push --tags && npm publish --tag alpha"
   },
   "author": "Arpinum",
   "license": "MIT",
