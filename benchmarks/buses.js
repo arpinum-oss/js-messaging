@@ -1,12 +1,12 @@
 'use strict';
 
 const { createMessageBus } = require('../build');
-const { createQuickBus } = require('../build/quickBus');
+const { QuickBus } = require('../build/quickBus');
 
 const postCount = 100000;
 
 benchWith(createMessageBus({ log: () => undefined }), 'Message bus').then(() =>
-  benchWith(createQuickBus(), 'Quick bus')
+  benchWith(new QuickBus(), 'Quick bus')
 );
 
 // 100000 messages handled in 1100 ms with Message bus

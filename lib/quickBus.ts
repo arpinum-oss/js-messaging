@@ -1,20 +1,15 @@
-import { Message, MessageHandler } from './types';
+import { AnyMessage, AnyMessageHandler, MessageBus } from './types';
 
-export function createQuickBus() {
-  const handlerMap = new Map<string, Array<MessageHandler<any>>>();
+export class QuickBus implements MessageBus {
+  private handlerMap = new Map<string, AnyMessageHandler[]>();
 
-  return {
-    post,
-    register
-  };
-
-  function post(message: Message<any>) {
+  public post(message: AnyMessage) {
     try {
       validateArgs();
     } catch (e) {
       return Promise.reject(e);
     }
-    const handlers = handlerMap.get(message.type) || [];
+    const handlers = this.handlerMap.get(message.type) || [];
     return Promise.all(handlers.map(h => h(message)));
 
     function validateArgs() {
@@ -27,10 +22,13 @@ export function createQuickBus() {
     }
   }
 
-  function register(type: string, handler: MessageHandler<any>) {
+  public register(type: string, handler: AnyMessageHandler) {
     validateArgs();
-    const handlers = (handlerMap.get(type) || []).concat(handler);
-    handlerMap.set(type, handlers);
+    const handlers = (this.handlerMap.get(type) || []).concat(handler);
+    this.handlerMap.set(type, handlers);
+    return () => {
+      return;
+    };
 
     function validateArgs() {
       if (!type) {
@@ -43,5 +41,17 @@ export function createQuickBus() {
         throw new Error('Handler must be a function');
       }
     }
+  }
+
+  public handlerCount(_: string) {
+    return 0;
+  }
+
+  public postAll(_: AnyMessage[]) {
+    return Promise.resolve([]);
+  }
+
+  public unregisterAll(..._: string[]) {
+    return;
   }
 }

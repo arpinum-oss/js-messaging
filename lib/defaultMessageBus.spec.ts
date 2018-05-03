@@ -2,7 +2,8 @@ import * as t from 'tcomb';
 
 import { wrap } from '@arpinum/promising';
 import { contracts } from './contracts';
-import { createMessageBus, MessageBus } from './messageBus';
+import { DefaultMessageBus } from './defaultMessageBus';
+import { AnyMessage, MessageBus } from './types';
 
 const { MessageBusContract } = contracts(t);
 
@@ -10,60 +11,62 @@ describe('Message bus', () => {
   let bus: MessageBus;
 
   beforeEach(() => {
-    bus = createMessageBus();
+    bus = new DefaultMessageBus();
   });
 
-  it('should match MessageBusContract', () => {
+  it('should match MessageBus', () => {
     expect(MessageBusContract.is(bus)).toBeTruthy();
   });
 
   describe('while creating', () => {
     it('should ensure log is a function', () => {
-      const creation = () => createMessageBus({ log: 3 } as any);
+      const creation = () => new DefaultMessageBus({ log: 3 } as any);
 
       expect(creation).toThrow('log must be a function');
     });
 
     it('should ensure exclusiveHandlers is a boolean', () => {
-      const creation = () => createMessageBus({ exclusiveHandlers: 3 } as any);
+      const creation = () =>
+        new DefaultMessageBus({ exclusiveHandlers: 3 } as any);
 
       expect(creation).toThrow('exclusiveHandlers must be a boolean');
     });
 
     it('should ensure ensureAtLeastOneHandler is a boolean', () => {
       const creation = () =>
-        createMessageBus({ ensureAtLeastOneHandler: 3 } as any);
+        new DefaultMessageBus({ ensureAtLeastOneHandler: 3 } as any);
 
       expect(creation).toThrow('ensureAtLeastOneHandler must be a boolean');
     });
 
     it('should ensure handlersConcurrency is a number', () => {
       const creation = () =>
-        createMessageBus({ handlersConcurrency: '3' } as any);
+        new DefaultMessageBus({ handlersConcurrency: '3' } as any);
 
       expect(creation).toThrow('handlersConcurrency must be a number');
     });
 
     it('should ensure beforePost is an array', () => {
-      const creation = () => createMessageBus({ beforePost: '3' } as any);
+      const creation = () => new DefaultMessageBus({ beforePost: '3' } as any);
 
       expect(creation).toThrow('beforePost must be an array');
     });
 
     it('should ensure beforeHandle is an array', () => {
-      const creation = () => createMessageBus({ beforeHandle: '3' } as any);
+      const creation = () =>
+        new DefaultMessageBus({ beforeHandle: '3' } as any);
 
       expect(creation).toThrow('beforeHandle must be an array');
     });
 
     it('should ensure afterHandle is an array', () => {
-      const creation = () => createMessageBus({ afterHandle: '3' } as any);
+      const creation = () => new DefaultMessageBus({ afterHandle: '3' } as any);
 
       expect(creation).toThrow('afterHandle must be an array');
     });
 
     it('should ensure afterPost is an array', () => {
-      const creation = () => createMessageBus({ afterPost: '3' } as any);
+      const creation = () => new DefaultMessageBus({ afterPost: '3' } as any);
 
       expect(creation).toThrow('afterPost must be an array');
     });
@@ -120,7 +123,7 @@ describe('Message bus', () => {
     });
 
     it('should reject if no handler and configured to ensure at least one', () => {
-      const myBus = createMessageBus({ ensureAtLeastOneHandler: true });
+      const myBus = new DefaultMessageBus({ ensureAtLeastOneHandler: true });
 
       const post = myBus.post({ type: 'MyMessage' });
 
@@ -133,7 +136,7 @@ describe('Message bus', () => {
     });
 
     it('should return undefined when no handler and bus handlers are exclusive', () => {
-      const myBus = createMessageBus({ exclusiveHandlers: true });
+      const myBus = new DefaultMessageBus({ exclusiveHandlers: true });
 
       const post = myBus.post({ type: 'MyMessage' });
 
@@ -153,7 +156,7 @@ describe('Message bus', () => {
     });
 
     it('should post the message to the only handler when bus is configured as exclusive', () => {
-      const myBus = createMessageBus({ exclusiveHandlers: true });
+      const myBus = new DefaultMessageBus({ exclusiveHandlers: true });
       myBus.register('MyMessage', () => Promise.resolve('the handler'));
 
       const post = myBus.post({ type: 'MyMessage' });
@@ -164,7 +167,7 @@ describe('Message bus', () => {
     });
 
     it("won't post to the wrong handler", () => {
-      const posts = [];
+      const posts: string[] = [];
       bus.register('MyRightMessage', wrap(() => posts.push('handler1')));
       bus.register('MyWrongMessage', wrap(() => posts.push('handler2')));
 
@@ -178,7 +181,7 @@ describe('Message bus', () => {
 
   describe('while posting multiple messages at once', () => {
     it('should post all messages', () => {
-      const posts = [];
+      const posts: string[] = [];
       bus.register('message1', () => {
         posts.push('handler 1');
         return 'handler 1';
@@ -205,7 +208,7 @@ describe('Message bus', () => {
     });
 
     it('could post no message', () => {
-      const posts = [];
+      const posts: string[] = [];
       bus.register('message1', () => {
         posts.push('handler 1');
         return 'handler 1';
@@ -219,7 +222,7 @@ describe('Message bus', () => {
     });
 
     it('should post only one message', () => {
-      const posts = [];
+      const posts: string[] = [];
       bus.register('message1', () => {
         posts.push('handler 1');
         return 'handler 1';
@@ -254,7 +257,7 @@ describe('Message bus', () => {
     });
 
     it("won't allow multiple handlers when bus is configured as exclusive", () => {
-      const myBus = createMessageBus({ exclusiveHandlers: true });
+      const myBus = new DefaultMessageBus({ exclusiveHandlers: true });
       myBus.register('MyMessage', () => Promise.resolve('the handler'));
 
       const act = () =>
@@ -282,7 +285,7 @@ describe('Message bus', () => {
 
   describe('while unregistering all handlers for a type', () => {
     it('should ensure types are strings', () => {
-      const unregisterAll = () => bus.unregisterAll('MyMessage', 3);
+      const unregisterAll = () => bus.unregisterAll('MyMessage', 3 as any);
 
       expect(unregisterAll).toThrow('types[1] must be a string');
     });
@@ -322,18 +325,18 @@ describe('Message bus', () => {
   describe('having some before handle decorators ', () => {
     it('should execute them before message handling', () => {
       const beforeHandle = [
-        m =>
+        (m: AnyMessage) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|first|` }
           }),
-        m =>
+        (m: AnyMessage) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|second|` }
           })
       ];
-      const myBus = createMessageBus({ beforeHandle });
-      let postedMessage;
-      myBus.register('MyMessage', m => {
+      const myBus = new DefaultMessageBus({ beforeHandle });
+      let postedMessage: AnyMessage;
+      myBus.register('MyMessage', (m: AnyMessage) => {
         postedMessage = m;
         return Promise.resolve();
       });
@@ -353,18 +356,18 @@ describe('Message bus', () => {
 
     it('should execute them serially though they are async', () => {
       const beforeHandle = [
-        m =>
+        (m: AnyMessage) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|first|` }
           }),
-        m =>
+        (m: AnyMessage) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|second|` }
           })
       ];
-      const myBus = createMessageBus({ beforeHandle });
-      let postedMessage;
-      myBus.register('MyMessage', m => {
+      const myBus = new DefaultMessageBus({ beforeHandle });
+      let postedMessage: AnyMessage;
+      myBus.register('MyMessage', (m: AnyMessage) => {
         postedMessage = m;
         return Promise.resolve();
       });
@@ -385,10 +388,10 @@ describe('Message bus', () => {
   describe('having some after handle decorators ', () => {
     it('should execute them after message handling', () => {
       const afterHandle = [
-        result => Object.assign({}, { order: `${result.order}|first|` }),
-        result => Object.assign({}, { order: `${result.order}|second|` })
+        (result: any) => Object.assign({}, { order: `${result.order}|first|` }),
+        (result: any) => Object.assign({}, { order: `${result.order}|second|` })
       ];
-      const myBus = createMessageBus({ afterHandle });
+      const myBus = new DefaultMessageBus({ afterHandle });
       myBus.register('MyMessage', () =>
         Promise.resolve({ order: '|initial|' })
       );
@@ -406,18 +409,18 @@ describe('Message bus', () => {
   describe('having some before post decorators ', () => {
     it('should execute them before message handling', () => {
       const beforePost = [
-        m =>
+        (m: AnyMessage) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|first|` }
           }),
-        m =>
+        (m: AnyMessage) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|second|` }
           })
       ];
-      const myBus = createMessageBus({ beforePost });
-      let postedMessage;
-      myBus.register('MyMessage', m => {
+      const myBus = new DefaultMessageBus({ beforePost });
+      let postedMessage: AnyMessage;
+      myBus.register('MyMessage', (m: AnyMessage) => {
         postedMessage = m;
         return Promise.resolve();
       });
@@ -439,10 +442,14 @@ describe('Message bus', () => {
   describe('having some after post decorators ', () => {
     it('should execute them after message post', () => {
       const afterPost = [
-        ([result]) => [Object.assign({}, { order: `${result.order}|first|` })],
-        ([result]) => [Object.assign({}, { order: `${result.order}|second|` })]
+        ([result]: any[]) => [
+          Object.assign({}, { order: `${result.order}|first|` })
+        ],
+        ([result]: any[]) => [
+          Object.assign({}, { order: `${result.order}|second|` })
+        ]
       ];
-      const myBus = createMessageBus({ afterPost });
+      const myBus = new DefaultMessageBus({ afterPost });
       myBus.register('MyMessage', () =>
         Promise.resolve({ order: '|initial|' })
       );

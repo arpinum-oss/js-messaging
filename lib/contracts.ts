@@ -7,7 +7,7 @@ export function contracts(t: any) {
       unregisterAll: t.Function,
       handlerCount: t.Function
     },
-    { name: 'MessageBusContract' }
+    { name: 'MessageBus' }
   );
 
   const MessageContract = t.interface(

@@ -1,10 +1,11 @@
-import { createQuickBus } from './quickBus';
+import { QuickBus } from './quickBus';
+import { MessageBus } from './types';
 
 describe('Quick bus', () => {
-  let bus;
+  let bus: MessageBus;
 
   beforeEach(() => {
-    bus = createQuickBus();
+    bus = new QuickBus();
   });
 
   describe('while posting', () => {
@@ -20,7 +21,7 @@ describe('Quick bus', () => {
     });
 
     it("won't post to the wrong handler", () => {
-      const posts = [];
+      const posts: string[] = [];
       bus.register('MyRightMessage', () => {
         posts.push('first handler');
       });
@@ -36,7 +37,7 @@ describe('Quick bus', () => {
     });
 
     it('should ensure message is defined', () => {
-      const post = bus.post();
+      const post = bus.post(undefined as any);
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
@@ -45,7 +46,7 @@ describe('Quick bus', () => {
     });
 
     it('should ensure message type is defined', () => {
-      const post = bus.post({});
+      const post = bus.post({} as any);
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
@@ -62,13 +63,13 @@ describe('Quick bus', () => {
     });
 
     it('should ensure handler is defined', () => {
-      const register = () => bus.register('MyMessage');
+      const register = () => bus.register('MyMessage', undefined as any);
 
       expect(register).toThrow('Missing handler');
     });
 
     it('should ensure handler is a function', () => {
-      const register = () => bus.register('MyMessage', 3);
+      const register = () => bus.register('MyMessage', 3 as any);
 
       expect(register).toThrow('Handler must be a function');
     });
