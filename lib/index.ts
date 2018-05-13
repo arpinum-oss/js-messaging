@@ -3,6 +3,7 @@ import { MessageBus } from './types';
 
 export * from './contracts';
 export * from './defaultMessageBus';
+export * from './messageCreator';
 export * from './types';
 
 export function createMessageBus(options: MessageBusOptions = {}): MessageBus {

@@ -14,5 +14,5 @@
     "types": ["jest"]
   },
   "include": ["./lib/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.js"]
+  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.js", "./examples"]
 }
