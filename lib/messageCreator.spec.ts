@@ -23,5 +23,14 @@ describe('Message creator', () => {
 
       expect(createPerson.toString()).toEqual('CREATE_PERSON');
     });
+
+    it('which could take no argument', () => {
+      const sayHello = messageCreator<void>('SAY_HELLO');
+
+      const message = sayHello();
+
+      expect(message).toEqual({ type: 'SAY_HELLO' });
+      expect(Object.keys(message)).not.toContain('payload');
+    });
   });
 });
