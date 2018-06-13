@@ -3,7 +3,7 @@ import * as t from 'tcomb';
 import { wrap } from '@arpinum/promising';
 import { contracts } from './contracts';
 import { DefaultMessageBus } from './defaultMessageBus';
-import { AnyMessage, MessageBus } from './types';
+import { Message, MessageBus } from './types';
 
 const { MessageBusContract } = contracts(t);
 
@@ -325,18 +325,18 @@ describe('Message bus', () => {
   describe('having some before handle decorators ', () => {
     it('should execute them before message handling', () => {
       const beforeHandle = [
-        (m: AnyMessage) =>
+        (m: Message) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|first|` }
           }),
-        (m: AnyMessage) =>
+        (m: Message) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|second|` }
           })
       ];
       const myBus = new DefaultMessageBus({ beforeHandle });
-      let postedMessage: AnyMessage;
-      myBus.register('MyMessage', (m: AnyMessage) => {
+      let postedMessage: Message;
+      myBus.register('MyMessage', (m: Message) => {
         postedMessage = m;
         return Promise.resolve();
       });
@@ -356,18 +356,18 @@ describe('Message bus', () => {
 
     it('should execute them serially though they are async', () => {
       const beforeHandle = [
-        (m: AnyMessage) =>
+        (m: Message) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|first|` }
           }),
-        (m: AnyMessage) =>
+        (m: Message) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|second|` }
           })
       ];
       const myBus = new DefaultMessageBus({ beforeHandle });
-      let postedMessage: AnyMessage;
-      myBus.register('MyMessage', (m: AnyMessage) => {
+      let postedMessage: Message;
+      myBus.register('MyMessage', (m: Message) => {
         postedMessage = m;
         return Promise.resolve();
       });
@@ -409,18 +409,18 @@ describe('Message bus', () => {
   describe('having some before post decorators ', () => {
     it('should execute them before message handling', () => {
       const beforePost = [
-        (m: AnyMessage) =>
+        (m: Message) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|first|` }
           }),
-        (m: AnyMessage) =>
+        (m: Message) =>
           Object.assign({}, m, {
             payload: { order: `${m.payload.order}|second|` }
           })
       ];
       const myBus = new DefaultMessageBus({ beforePost });
-      let postedMessage: AnyMessage;
-      myBus.register('MyMessage', (m: AnyMessage) => {
+      let postedMessage: Message;
+      myBus.register('MyMessage', (m: Message) => {
         postedMessage = m;
         return Promise.resolve();
       });

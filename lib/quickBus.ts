@@ -1,9 +1,9 @@
-import { AnyMessage, AnyMessageHandler, MessageBus } from './types';
+import { Message, MessageBus, MessageHandler } from './types';
 
 export class QuickBus implements MessageBus {
-  private handlerMap = new Map<string, AnyMessageHandler[]>();
+  private handlerMap = new Map<string, MessageHandler[]>();
 
-  public post(message: AnyMessage) {
+  public post(message: Message) {
     try {
       validateArgs();
     } catch (e) {
@@ -22,7 +22,7 @@ export class QuickBus implements MessageBus {
     }
   }
 
-  public register(type: string, handler: AnyMessageHandler) {
+  public register(type: string, handler: MessageHandler) {
     validateArgs();
     const handlers = (this.handlerMap.get(type) || []).concat(handler);
     this.handlerMap.set(type, handlers);
@@ -47,7 +47,7 @@ export class QuickBus implements MessageBus {
     return 0;
   }
 
-  public postAll(_: AnyMessage[]) {
+  public postAll(_: Message[]) {
     return Promise.resolve([]);
   }
 

@@ -1,7 +1,7 @@
 import { assert } from '@arpinum/defender';
 import { compose, mapWithOptions as mapToPromises } from '@arpinum/promising';
 
-import { AnyMessage, AnyMessageHandler, MessageBus } from './types';
+import { Message, MessageBus, MessageHandler } from './types';
 
 export interface MessageBusOptions {
   log?: (...args: any[]) => void;
@@ -27,10 +27,10 @@ const defaultOptions: MessageBusOptions = {
 
 export class DefaultMessageBus implements MessageBus {
   private options: MessageBusOptions;
-  private handlerMap: Map<string, AnyMessageHandler[]>;
-  private beforeHandle: (m: AnyMessage) => Promise<AnyMessage>;
+  private handlerMap: Map<string, MessageHandler[]>;
+  private beforeHandle: (m: Message) => Promise<Message>;
   private afterHandle: (r: any) => Promise<any>;
-  private beforePost: (m: AnyMessage) => Promise<AnyMessage>;
+  private beforePost: (m: Message) => Promise<Message>;
   private afterPost: (r: any) => Promise<any>;
 
   constructor(options: MessageBusOptions = {}) {
@@ -63,7 +63,7 @@ export class DefaultMessageBus implements MessageBus {
     assert(options.afterPost, 'options#afterPost').toBeAnArray();
   }
 
-  public postAll(messages: AnyMessage[]) {
+  public postAll(messages: Message[]) {
     if (messages.length === 0) {
       return Promise.resolve([]);
     }
@@ -77,14 +77,14 @@ export class DefaultMessageBus implements MessageBus {
     );
   }
 
-  public post(message: AnyMessage) {
+  public post(message: Message) {
     const self = this;
     return validatedMessage(message)
       .then(this.beforePost)
       .then(postToHandlers)
       .then(this.afterPost);
 
-    function postToHandlers(messageToPost: AnyMessage) {
+    function postToHandlers(messageToPost: Message) {
       self.options.log(`Posting ${messageToPost.type}`);
       const handlers = self.handlersFor(messageToPost.type);
       checkHandlerRequirements(messageToPost, handlers);
@@ -95,8 +95,8 @@ export class DefaultMessageBus implements MessageBus {
     }
 
     function validatedMessage(
-      messageToValidate: AnyMessage
-    ): Promise<AnyMessage> {
+      messageToValidate: Message
+    ): Promise<Message> {
       try {
         assert(messageToValidate, 'message').toBePresent();
         assert(messageToValidate.type, 'message#type')
@@ -109,8 +109,8 @@ export class DefaultMessageBus implements MessageBus {
     }
 
     function checkHandlerRequirements(
-      messageToCheck: AnyMessage,
-      handlers: AnyMessageHandler[]
+      messageToCheck: Message,
+      handlers: MessageHandler[]
     ) {
       if (handlers.length === 0 && self.options.ensureAtLeastOneHandler) {
         throw new Error(`No handler for ${messageToCheck.type}`);
@@ -118,8 +118,8 @@ export class DefaultMessageBus implements MessageBus {
     }
 
     function postForExclusiveHandlers(
-      messageToPost: AnyMessage,
-      handlers: AnyMessageHandler[]
+      messageToPost: Message,
+      handlers: MessageHandler[]
     ) {
       if (handlers.length === 0) {
         return Promise.resolve();
@@ -128,8 +128,8 @@ export class DefaultMessageBus implements MessageBus {
     }
 
     function postForStandardHandlers(
-      messageToPost: AnyMessage,
-      handlers: AnyMessageHandler[]
+      messageToPost: Message,
+      handlers: MessageHandler[]
     ) {
       if (handlers.length === 0) {
         return Promise.resolve([]);
@@ -137,7 +137,7 @@ export class DefaultMessageBus implements MessageBus {
       if (handlers.length === 1) {
         return self.handle(messageToPost, handlers[0]).then(r => [r]);
       }
-      const handleMessage = (handler: AnyMessageHandler) =>
+      const handleMessage = (handler: MessageHandler) =>
         self.handle(messageToPost, handler);
       return mapToPromises(
         handleMessage,
@@ -147,13 +147,13 @@ export class DefaultMessageBus implements MessageBus {
     }
   }
 
-  private handle(message: AnyMessage, handler: AnyMessageHandler) {
+  private handle(message: Message, handler: MessageHandler) {
     return this.beforeHandle(message)
       .then(handler)
       .then(this.afterHandle);
   }
 
-  public register(type: string, handler: AnyMessageHandler) {
+  public register(type: string, handler: MessageHandler) {
     const self = this;
     validateArgs();
     this.options.log(`Registering to ${type}`);
@@ -205,7 +205,7 @@ export class DefaultMessageBus implements MessageBus {
     return this.handlerMap.get(messageType) || [];
   }
 
-  private updateHandlers(messageType: string, handlers: AnyMessageHandler[]) {
+  private updateHandlers(messageType: string, handlers: MessageHandler[]) {
     this.handlerMap.set(messageType, handlers);
   }
 }
