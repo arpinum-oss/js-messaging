@@ -14,7 +14,18 @@ export interface MessageBusOptions {
   afterHandle?: any[];
 }
 
-const defaultOptions: MessageBusOptions = {
+interface MessageBusSafeOptions {
+  log: (...args: any[]) => void;
+  exclusiveHandlers: boolean;
+  ensureAtLeastOneHandler: boolean;
+  handlersConcurrency: number;
+  beforePost: any[];
+  afterPost: any[];
+  beforeHandle: any[];
+  afterHandle: any[];
+}
+
+const defaultOptions: MessageBusSafeOptions = {
   log: () => undefined as any,
   exclusiveHandlers: false,
   ensureAtLeastOneHandler: false,
@@ -26,7 +37,7 @@ const defaultOptions: MessageBusOptions = {
 };
 
 export class DefaultMessageBus implements MessageBus {
-  private options: MessageBusOptions;
+  private options: MessageBusSafeOptions;
   private handlerMap: Map<string, MessageHandler[]>;
   private beforeHandle: (m: Message) => Promise<Message>;
   private afterHandle: (r: any) => Promise<any>;
@@ -94,9 +105,7 @@ export class DefaultMessageBus implements MessageBus {
       return postForStandardHandlers(messageToPost, handlers);
     }
 
-    function validatedMessage(
-      messageToValidate: Message
-    ): Promise<Message> {
+    function validatedMessage(messageToValidate: Message): Promise<Message> {
       try {
         assert(messageToValidate, 'message').toBePresent();
         assert(messageToValidate.type, 'message#type')
