@@ -2,6 +2,10 @@
 
 ## 4.0.0 - unreleased
 
+### Changes
+
+- `voidMessageCreator` factory to create messages with undefined payload
+
 ### Breaking changes
 
 - No more tcomb related stuff

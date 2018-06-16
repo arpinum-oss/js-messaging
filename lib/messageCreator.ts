@@ -6,15 +6,37 @@ export interface MessageCreator<Payload> {
   (payload: Payload): Message<Payload>;
 }
 
-export function messageCreator<Payload=any>(type: string): MessageCreator<Payload> {
+export function messageCreator<Payload = any>(
+  type: string
+): MessageCreator<Payload> {
   return Object.assign(
     (payload: Payload) => ({
       type,
       payload
     }),
-    {
-      type,
-      toString: () => type
-    }
+    typeInformation(type)
   );
+}
+
+export interface VoidMessageCreator {
+  type: string;
+
+  (): Message<void>;
+}
+
+export function voidMessageCreator(type: string): VoidMessageCreator {
+  return Object.assign(
+    () => ({
+      type,
+      payload: undefined
+    }),
+    typeInformation(type)
+  );
+}
+
+function typeInformation(type: string) {
+  return {
+    type,
+    toString: () => type
+  };
 }

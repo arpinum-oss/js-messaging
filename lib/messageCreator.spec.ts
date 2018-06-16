@@ -1,4 +1,4 @@
-import { messageCreator } from './messageCreator';
+import { messageCreator, voidMessageCreator } from './messageCreator';
 
 interface Person {
   firstName: string;
@@ -36,4 +36,24 @@ describe('Message creator factory', () => {
 
     expect(message).toEqual({ type: 'SAY_HELLO', payload: undefined });
   });
+});
+
+describe('Void message creator factory', () => {
+  it('should create a void message', () => {
+    const sayHello = voidMessageCreator('SAY_HELLO');
+
+    const message = sayHello();
+
+    expect(message).toEqual({
+      type: 'SAY_HELLO',
+      payload: undefined
+    });
+  });
+
+  it('should expose type', () => {
+    const sayHello = voidMessageCreator('SAY_HELLO');
+
+    expect(sayHello.type).toEqual('SAY_HELLO');
+  });
+
 });
