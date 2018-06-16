@@ -1,18 +1,23 @@
 import { Message } from './types';
 
-export type MessageCreator<TPayload> = (
-  payload?: TPayload
-) => Message<TPayload>;
+export interface MessageCreator<Payload> {
+  type: string;
 
-export function messageCreator<TPayload>(
-  type: string
-): MessageCreator<TPayload> {
-  const creator: MessageCreator<TPayload> = payload => {
-    if (payload !== undefined) {
-      return { type, payload };
+  (payload?: Payload): Message<Payload>;
+}
+
+export function messageCreator<Payload>(type: string): MessageCreator<Payload> {
+  return Object.assign(
+    (payload?: Payload) =>
+      payload !== undefined
+        ? {
+          type,
+          payload
+        }
+        : { type },
+    {
+      type,
+      toString: () => type
     }
-    return { type };
-  };
-  creator.toString = () => type;
-  return creator;
+  );
 }

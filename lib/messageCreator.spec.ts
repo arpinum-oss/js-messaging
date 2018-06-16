@@ -5,32 +5,36 @@ interface Person {
   lastName: string;
 }
 
-describe('Message creator', () => {
-  describe('should return a factory', () => {
-    it('which creates a message', () => {
-      const createPerson = messageCreator<Person>('CREATE_PERSON');
+describe('Message creator factory', () => {
+  it('should create a message', () => {
+    const createPerson = messageCreator<Person>('CREATE_PERSON');
 
-      const message = createPerson({ firstName: 'John', lastName: 'Doe' });
+    const message = createPerson({ firstName: 'John', lastName: 'Doe' });
 
-      expect(message).toEqual({
-        type: 'CREATE_PERSON',
-        payload: { firstName: 'John', lastName: 'Doe' }
-      });
+    expect(message).toEqual({
+      type: 'CREATE_PERSON',
+      payload: { firstName: 'John', lastName: 'Doe' }
     });
+  });
 
-    it('with a toString corresponding to type', () => {
-      const createPerson = messageCreator<Person>('CREATE_PERSON');
+  it('should expose type with toString', () => {
+    const createPerson = messageCreator<Person>('CREATE_PERSON');
 
-      expect(createPerson.toString()).toEqual('CREATE_PERSON');
-    });
+    expect(createPerson.toString()).toEqual('CREATE_PERSON');
+  });
 
-    it('which could take no argument', () => {
-      const sayHello = messageCreator<void>('SAY_HELLO');
+  it('should expose type', () => {
+    const createPerson = messageCreator<Person>('CREATE_PERSON');
 
-      const message = sayHello();
+    expect(createPerson.type).toEqual('CREATE_PERSON');
+  });
 
-      expect(message).toEqual({ type: 'SAY_HELLO' });
-      expect(Object.keys(message)).not.toContain('payload');
-    });
+  it('could have no payload type argument', () => {
+    const sayHello = messageCreator('SAY_HELLO');
+
+    const message = sayHello();
+
+    expect(message).toEqual({ type: 'SAY_HELLO' });
+    expect(Object.keys(message)).not.toContain('payload');
   });
 });
