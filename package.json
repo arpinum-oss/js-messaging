@@ -12,7 +12,7 @@
     "jest": "jest",
     "testw": "jest --watch",
     "prettier": "prettier --write '**/*.{js,json,md,ts}'",
-    "compile": "tsc --noEmit",
+    "compile": "tsc -p tsconfig.test.json",
     "test": "run-s -c compile jest tslint",
     "prebuild": "rm -rf ./build",
     "build": "tsc",

@@ -8,8 +8,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "types": ["jest"]
+    "noUnusedParameters": true
   },
   "include": ["./lib/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.js", "./examples"]

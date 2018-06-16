@@ -13,14 +13,14 @@ describe('Quick bus', () => {
       bus.register('MyMessage', () => Promise.resolve('first handler'));
       bus.register('MyMessage', () => Promise.resolve('second handler'));
 
-      const post = bus.post({ type: 'MyMessage' });
+      const post = bus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(result => {
         expect(result).toEqual(['first handler', 'second handler']);
       });
     });
 
-    it("won't post to the wrong handler", () => {
+    it('won\'t post to the wrong handler', () => {
       const posts: string[] = [];
       bus.register('MyRightMessage', () => {
         posts.push('first handler');
@@ -29,7 +29,7 @@ describe('Quick bus', () => {
         posts.push('second handler');
       });
 
-      const post = bus.post({ type: 'MyRightMessage' });
+      const post = bus.post({ type: 'MyRightMessage', payload: undefined });
 
       return post.then(() => {
         expect(posts).toEqual(['first handler']);
@@ -57,7 +57,7 @@ describe('Quick bus', () => {
 
   describe('while registering', () => {
     it('should ensure message type is defined', () => {
-      const register = () => bus.register(null, () => undefined);
+      const register = () => bus.register(null as any, () => undefined);
 
       expect(register).toThrow('Missing type');
     });

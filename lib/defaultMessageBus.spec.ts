@@ -98,7 +98,7 @@ describe('Message bus', () => {
       bus.register('MyMessage', () => Promise.resolve('handler1'));
       bus.register('MyMessage', () => Promise.resolve('handler2'));
 
-      const post = bus.post({ type: 'MyMessage' });
+      const post = bus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(result => {
         expect(result).toEqual(['handler1', 'handler2']);
@@ -106,7 +106,7 @@ describe('Message bus', () => {
     });
 
     it('should return empty array when no handler', () => {
-      const post = bus.post({ type: 'MyMessage' });
+      const post = bus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(result => {
         expect(result).toHaveLength(0);
@@ -116,7 +116,7 @@ describe('Message bus', () => {
     it('should reject if no handler and configured to ensure at least one', () => {
       const myBus = new DefaultMessageBus({ ensureAtLeastOneHandler: true });
 
-      const post = myBus.post({ type: 'MyMessage' });
+      const post = myBus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
@@ -129,7 +129,7 @@ describe('Message bus', () => {
     it('should return undefined when no handler and bus handlers are exclusive', () => {
       const myBus = new DefaultMessageBus({ exclusiveHandlers: true });
 
-      const post = myBus.post({ type: 'MyMessage' });
+      const post = myBus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(result => {
         expect(result).toBeUndefined();
@@ -139,7 +139,7 @@ describe('Message bus', () => {
     it('should promisify handlers', () => {
       bus.register('MyMessage', () => 'handler');
 
-      const post = bus.post({ type: 'MyMessage' });
+      const post = bus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(result => {
         expect(result).toEqual(['handler']);
@@ -150,7 +150,7 @@ describe('Message bus', () => {
       const myBus = new DefaultMessageBus({ exclusiveHandlers: true });
       myBus.register('MyMessage', () => Promise.resolve('the handler'));
 
-      const post = myBus.post({ type: 'MyMessage' });
+      const post = myBus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(result => {
         expect(result).toEqual('the handler');
@@ -162,7 +162,7 @@ describe('Message bus', () => {
       bus.register('MyRightMessage', wrap(() => posts.push('handler1')));
       bus.register('MyWrongMessage', wrap(() => posts.push('handler2')));
 
-      const post = bus.post({ type: 'MyRightMessage' });
+      const post = bus.post({ type: 'MyRightMessage', payload: undefined });
 
       return post.then(() => {
         expect(posts).toEqual(['handler1']);
@@ -187,9 +187,9 @@ describe('Message bus', () => {
       });
 
       const post = bus.postAll([
-        { type: 'message1' },
-        { type: 'message2' },
-        { type: 'message3' }
+        { type: 'message1', payload: undefined },
+        { type: 'message2', payload: undefined },
+        { type: 'message3', payload: undefined }
       ]);
 
       return post.then(results => {
@@ -219,7 +219,7 @@ describe('Message bus', () => {
         return 'handler 1';
       });
 
-      const post = bus.postAll([{ type: 'message1' }]);
+      const post = bus.postAll([{ type: 'message1', payload: undefined }]);
 
       return post.then(results => {
         expect(posts).toEqual(['handler 1']);
@@ -267,7 +267,7 @@ describe('Message bus', () => {
 
       unregister();
 
-      const post = bus.post({ type: 'MyMessage' });
+      const post = bus.post({ type: 'MyMessage', payload: undefined });
       return post.then(result => {
         expect(result).toEqual(['handler1']);
       });
@@ -287,7 +287,7 @@ describe('Message bus', () => {
 
       bus.unregisterAll('MyMessage');
 
-      const post = bus.post({ type: 'MyMessage' });
+      const post = bus.post({ type: 'MyMessage', payload: undefined });
       return post.then(result => {
         expect(result).toHaveLength(0);
       });
@@ -303,9 +303,9 @@ describe('Message bus', () => {
       bus.unregisterAll('MyMessage1', 'MyMessage2');
 
       const posts = Promise.all([
-        bus.post({ type: 'MyMessage1' }),
-        bus.post({ type: 'MyMessage2' }),
-        bus.post({ type: 'MyMessage3' })
+        bus.post({ type: 'MyMessage1', payload: undefined }),
+        bus.post({ type: 'MyMessage2', payload: undefined }),
+        bus.post({ type: 'MyMessage3', payload: undefined })
       ]);
       return posts.then(result => {
         expect(result).toEqual([[], [], ['handler3']]);
@@ -387,7 +387,7 @@ describe('Message bus', () => {
         Promise.resolve({ order: '|initial|' })
       );
 
-      const post = myBus.post({ type: 'MyMessage' });
+      const post = myBus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(([result]) => {
         expect(result).toEqual({
@@ -445,7 +445,7 @@ describe('Message bus', () => {
         Promise.resolve({ order: '|initial|' })
       );
 
-      const post = myBus.post({ type: 'MyMessage' });
+      const post = myBus.post({ type: 'MyMessage', payload: undefined });
 
       return post.then(([result]) => {
         expect(result).toEqual({
