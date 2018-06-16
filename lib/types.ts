@@ -1,6 +1,6 @@
 export interface Message<TPayload = any> {
   type: string;
-  payload?: TPayload;
+  payload: TPayload;
 }
 
 export type MessageHandler<TPayload = any, TResult = any> = (
