@@ -25,7 +25,7 @@ bus.post({ type: 'PrintText', payload: 'Hello world' });
 
 ## Docs
 
-* [API](docs/api.md)
+- [API](docs/api.md)
 
 ## License
 

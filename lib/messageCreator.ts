@@ -11,9 +11,9 @@ export function messageCreator<Payload>(type: string): MessageCreator<Payload> {
     (payload?: Payload) =>
       payload !== undefined
         ? {
-          type,
-          payload
-        }
+            type,
+            payload
+          }
         : { type },
     {
       type,

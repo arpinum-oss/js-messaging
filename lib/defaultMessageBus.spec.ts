@@ -1,21 +1,12 @@
-import * as t from 'tcomb';
-
 import { wrap } from '@arpinum/promising';
-import { contracts } from './contracts';
 import { DefaultMessageBus } from './defaultMessageBus';
 import { Message, MessageBus } from './types';
-
-const { MessageBusContract } = contracts(t);
 
 describe('Message bus', () => {
   let bus: MessageBus;
 
   beforeEach(() => {
     bus = new DefaultMessageBus();
-  });
-
-  it('should match MessageBus', () => {
-    expect(MessageBusContract.is(bus)).toBeTruthy();
   });
 
   describe('while creating', () => {
@@ -74,7 +65,7 @@ describe('Message bus', () => {
 
   describe('while posting', () => {
     it('should ensure message is defined', () => {
-      const post = bus.post(undefined);
+      const post = bus.post(undefined as any);
 
       return post.then(
         () => Promise.reject(new Error('Should fail')),
@@ -239,13 +230,13 @@ describe('Message bus', () => {
 
   describe('while registering', () => {
     it('should ensure message type is defined', () => {
-      const register = () => bus.register(null, () => undefined);
+      const register = () => bus.register(null as any, () => undefined);
 
       expect(register).toThrow('type must be present');
     });
 
     it('should ensure handler is defined', () => {
-      const register = () => bus.register('MyMessage', undefined);
+      const register = () => bus.register('MyMessage', undefined as any);
 
       expect(register).toThrow('handler must be present');
     });

@@ -1,9 +1,9 @@
-export interface Message<TPayload=any> {
+export interface Message<TPayload = any> {
   type: string;
   payload?: TPayload;
 }
 
-export type MessageHandler<TPayload=any, TResult=any> = (
+export type MessageHandler<TPayload = any, TResult = any> = (
   message: Message<TPayload>
 ) => TResult;
 
