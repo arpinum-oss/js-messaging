@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./build",
+    "noEmit": true,
     "target": "es2015",
     "module": "commonjs",
     "declaration": true,
@@ -8,8 +9,9 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
+    "lib": ["es2017"]
   },
   "include": ["./lib/**/*"],
-  "exclude": ["node_modules", "**/*.spec.ts", "**/*.spec.js", "./examples"]
+  "exclude": ["node_modules"]
 }

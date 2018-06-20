@@ -12,10 +12,10 @@
     "jest": "jest",
     "testw": "jest --watch",
     "prettier": "prettier --write '**/*.{js,json,md,ts}'",
-    "compile": "tsc -p tsconfig.test.json",
+    "compile": "tsc",
     "test": "run-s -c compile jest tslint",
     "prebuild": "rm -rf ./build",
-    "build": "tsc",
+    "build": "tsc -p ./tsconfig.prod.json",
     "preversion": "run-s test build",
     "postversion": "git push && git push --tags && npm publish --tag alpha"
   },
