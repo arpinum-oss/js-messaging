@@ -20,7 +20,7 @@ describe('Quick bus', () => {
       });
     });
 
-    it('won\'t post to the wrong handler', () => {
+    it("won't post to the wrong handler", () => {
       const posts: string[] = [];
       bus.register('MyRightMessage', () => {
         posts.push('first handler');

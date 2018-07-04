@@ -55,5 +55,4 @@ describe('Void message creator factory', () => {
 
     expect(sayHello.type).toEqual('SAY_HELLO');
   });
-
 });

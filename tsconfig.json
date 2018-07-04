@@ -12,6 +12,6 @@
     "noUnusedParameters": true,
     "lib": ["es2017"]
   },
-  "include": ["./lib/**/*"],
+  "include": ["./lib/**/*", "./examples/**/*"],
   "exclude": ["node_modules"]
 }
