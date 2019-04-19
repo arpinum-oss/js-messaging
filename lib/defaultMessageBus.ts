@@ -82,7 +82,7 @@ export class DefaultMessageBus implements MessageBus {
       return this.post(messages[0]).then(r => [r]);
     }
     return mapToPromises(
-      message => this.post(message),
+      (message: Message) => this.post(message),
       { concurrency: 3 },
       messages
     );
