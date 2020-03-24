@@ -1,9 +1,9 @@
-'use strict';
+"use strict";
 
-const { messageCreator } = require('../build');
+const { messageCreator } = require("../build");
 
-const createPerson = messageCreator('CREATE_PERSON');
+const createPerson = messageCreator("CREATE_PERSON");
 
-const message = createPerson({ firstName: 'John', lastName: 'Doe' });
+const message = createPerson({ firstName: "John", lastName: "Doe" });
 
 console.log(message);

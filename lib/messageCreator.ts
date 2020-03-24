@@ -1,4 +1,4 @@
-import { Message } from './types';
+import { Message } from "./types";
 
 export interface MessageCreator<Payload> {
   type: string;
@@ -12,7 +12,7 @@ export function messageCreator<Payload = any>(
   return Object.assign(
     (payload: Payload) => ({
       type,
-      payload
+      payload,
     }),
     typeInformation(type)
   );
@@ -28,7 +28,7 @@ export function voidMessageCreator(type: string): VoidMessageCreator {
   return Object.assign(
     () => ({
       type,
-      payload: undefined
+      payload: undefined,
     }),
     typeInformation(type)
   );
@@ -37,6 +37,6 @@ export function voidMessageCreator(type: string): VoidMessageCreator {
 function typeInformation(type: string) {
   return {
     type,
-    toString: () => type
+    toString: () => type,
   };
 }

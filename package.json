@@ -28,20 +28,20 @@
     "event"
   ],
   "devDependencies": {
-    "@types/jest": "24.0.11",
-    "@types/node": "11.13.5",
-    "jest": "24.7.1",
+    "@types/jest": "25.1.4",
+    "@types/node": "13.9.3",
+    "jest": "25.1.0",
     "npm-run-all": "4.1.5",
-    "prettier": "1.17.0",
-    "ts-jest": "24.0.2",
-    "ts-node": "8.1.0",
-    "tslint": "5.16.0",
+    "prettier": "2.0.2",
+    "ts-jest": "25.2.1",
+    "ts-node": "8.8.1",
+    "tslint": "6.1.0",
     "tslint-config-prettier": "1.18.0",
-    "typescript": "3.4.4"
+    "typescript": "3.8.3"
   },
   "dependencies": {
-    "@arpinum/defender": "1.0.1",
-    "@arpinum/promising": "2.2.3"
+    "@arpinum/defender": "1.0.2",
+    "@arpinum/promising": "3.1.1"
   },
   "jest": {
     "transform": {

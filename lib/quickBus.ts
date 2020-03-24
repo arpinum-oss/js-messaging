@@ -1,4 +1,4 @@
-import { Message, MessageBus, MessageHandler } from './types';
+import { Message, MessageBus, MessageHandler } from "./types";
 
 export class QuickBus implements MessageBus {
   private handlerMap = new Map<string, MessageHandler[]>();
@@ -10,14 +10,14 @@ export class QuickBus implements MessageBus {
       return Promise.reject(e);
     }
     const handlers = this.handlerMap.get(message.type) || [];
-    return Promise.all(handlers.map(h => h(message)));
+    return Promise.all(handlers.map((h) => h(message)));
 
     function validateArgs() {
       if (!message) {
-        throw new Error('Missing message');
+        throw new Error("Missing message");
       }
       if (!message.type) {
-        throw new Error('Missing message type');
+        throw new Error("Missing message type");
       }
     }
   }
@@ -32,13 +32,13 @@ export class QuickBus implements MessageBus {
 
     function validateArgs() {
       if (!type) {
-        throw new Error('Missing type');
+        throw new Error("Missing type");
       }
       if (!handler) {
-        throw new Error('Missing handler');
+        throw new Error("Missing handler");
       }
-      if (handler.constructor.name !== 'Function') {
-        throw new Error('Handler must be a function');
+      if (handler.constructor.name !== "Function") {
+        throw new Error("Handler must be a function");
       }
     }
   }

@@ -1,7 +1,7 @@
-import { assert } from '@arpinum/defender';
-import { compose, mapWithOptions as mapToPromises } from '@arpinum/promising';
+import { assert } from "@arpinum/defender";
+import { compose, mapWithOptions as mapToPromises } from "@arpinum/promising";
 
-import { Message, MessageBus, MessageHandler } from './types';
+import { Message, MessageBus, MessageHandler } from "./types";
 
 export interface MessageBusOptions {
   log?: (...args: any[]) => void;
@@ -33,7 +33,7 @@ const defaultOptions: MessageBusSafeOptions = {
   beforePost: [],
   afterPost: [],
   beforeHandle: [],
-  afterHandle: []
+  afterHandle: [],
 };
 
 export class DefaultMessageBus implements MessageBus {
@@ -55,23 +55,23 @@ export class DefaultMessageBus implements MessageBus {
   }
 
   private validateOptions(options: MessageBusOptions) {
-    assert(options.log, 'options#log').toBeAFunction();
+    assert(options.log, "options#log").toBeAFunction();
     assert(
       options.exclusiveHandlers,
-      'options#exclusiveHandlers'
+      "options#exclusiveHandlers"
     ).toBeABoolean();
     assert(
       options.ensureAtLeastOneHandler,
-      'options#ensureAtLeastOneHandler'
+      "options#ensureAtLeastOneHandler"
     ).toBeABoolean();
     assert(
       options.handlersConcurrency,
-      'options#handlersConcurrency'
+      "options#handlersConcurrency"
     ).toBeANumber();
-    assert(options.beforePost, 'options#beforePost').toBeAnArray();
-    assert(options.beforeHandle, 'options#beforeHandle').toBeAnArray();
-    assert(options.afterHandle, 'options#afterHandle').toBeAnArray();
-    assert(options.afterPost, 'options#afterPost').toBeAnArray();
+    assert(options.beforePost, "options#beforePost").toBeAnArray();
+    assert(options.beforeHandle, "options#beforeHandle").toBeAnArray();
+    assert(options.afterHandle, "options#afterHandle").toBeAnArray();
+    assert(options.afterPost, "options#afterPost").toBeAnArray();
   }
 
   public postAll(messages: Message[]) {
@@ -79,7 +79,7 @@ export class DefaultMessageBus implements MessageBus {
       return Promise.resolve([]);
     }
     if (messages.length === 1) {
-      return this.post(messages[0]).then(r => [r]);
+      return this.post(messages[0]).then((r) => [r]);
     }
     return mapToPromises(
       (message: Message) => this.post(message),
@@ -107,8 +107,8 @@ export class DefaultMessageBus implements MessageBus {
 
     function validatedMessage(messageToValidate: Message): Promise<Message> {
       try {
-        assert(messageToValidate, 'message').toBePresent();
-        assert(messageToValidate.type, 'message#type')
+        assert(messageToValidate, "message").toBePresent();
+        assert(messageToValidate.type, "message#type")
           .toBePresent()
           .toBeAString();
         return Promise.resolve(message);
@@ -144,7 +144,7 @@ export class DefaultMessageBus implements MessageBus {
         return Promise.resolve([]);
       }
       if (handlers.length === 1) {
-        return self.handle(messageToPost, handlers[0]).then(r => [r]);
+        return self.handle(messageToPost, handlers[0]).then((r) => [r]);
       }
       const handleMessage = (handler: MessageHandler) =>
         self.handle(messageToPost, handler);
@@ -157,9 +157,7 @@ export class DefaultMessageBus implements MessageBus {
   }
 
   private handle(message: Message, handler: MessageHandler) {
-    return this.beforeHandle(message)
-      .then(handler)
-      .then(this.afterHandle);
+    return this.beforeHandle(message).then(handler).then(this.afterHandle);
   }
 
   public register(type: string, handler: MessageHandler) {
@@ -173,10 +171,8 @@ export class DefaultMessageBus implements MessageBus {
     return unregister;
 
     function validateArgs() {
-      assert(type, 'type').toBePresent();
-      assert(handler, 'handler')
-        .toBePresent()
-        .toBeAFunction();
+      assert(type, "type").toBePresent();
+      assert(handler, "handler").toBePresent().toBeAFunction();
     }
 
     function ensureHandlerExclusivity() {
@@ -191,14 +187,14 @@ export class DefaultMessageBus implements MessageBus {
     function unregister() {
       self.updateHandlers(
         type,
-        self.handlersFor(type).filter(h => h !== handler)
+        self.handlersFor(type).filter((h) => h !== handler)
       );
     }
   }
 
   public unregisterAll(...types: string[]) {
     validateArgs();
-    types.forEach(type => this.updateHandlers(type, []));
+    types.forEach((type) => this.updateHandlers(type, []));
 
     function validateArgs() {
       types.forEach((type, i) => assert(type, `types[${i}]`).toBeAString());
@@ -206,7 +202,7 @@ export class DefaultMessageBus implements MessageBus {
   }
 
   public handlerCount(type: string) {
-    assert(type, 'type').toBeAString();
+    assert(type, "type").toBeAString();
     return this.handlersFor(type).length;
   }
 
