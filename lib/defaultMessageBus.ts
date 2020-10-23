@@ -1,5 +1,5 @@
 import { assert } from "@arpinum/defender";
-import { compose, mapWithOptions as mapToPromises } from "@arpinum/promising";
+import { pipe, mapWithOptions as mapToPromises } from "@arpinum/promising";
 
 import { Message, MessageBus, MessageHandler } from "./types";
 
@@ -48,10 +48,10 @@ export class DefaultMessageBus implements MessageBus {
     this.validateOptions(options);
     this.options = Object.assign({}, defaultOptions, options);
     this.handlerMap = new Map();
-    this.beforeHandle = compose(this.options.beforeHandle);
-    this.afterHandle = compose(this.options.afterHandle);
-    this.beforePost = compose(this.options.beforePost);
-    this.afterPost = compose(this.options.afterPost);
+    this.beforeHandle = pipe(this.options.beforeHandle);
+    this.afterHandle = pipe(this.options.afterHandle);
+    this.beforePost = pipe(this.options.beforePost);
+    this.afterPost = pipe(this.options.afterPost);
   }
 
   private validateOptions(options: MessageBusOptions) {
