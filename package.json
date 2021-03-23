@@ -8,7 +8,7 @@
     "build"
   ],
   "scripts": {
-    "lint": "eslint . --fix --ext .ts",
+    "lint": "eslint . --fix --ext .ts,.js",
     "jest": "jest --verbose",
     "testw": "jest --watch",
     "prettier": "prettier --write '**/*.{js,json,md,ts}'",
