@@ -74,7 +74,7 @@ export class DefaultMessageBus implements MessageBus {
     assert(options.afterPost, "options#afterPost").toBeAnArray();
   }
 
-  public postAll(messages: Message[]) {
+  public postAll(messages: Message[]): Promise<any> {
     if (messages.length === 0) {
       return Promise.resolve([]);
     }
@@ -88,111 +88,105 @@ export class DefaultMessageBus implements MessageBus {
     );
   }
 
-  public post(message: Message) {
-    const self = this;
-    return validatedMessage(message)
+  public post(message: Message): Promise<any> {
+    return this.validatedMessage(message)
       .then(this.beforePost)
-      .then(postToHandlers)
+      .then((message) => this.postToHandlers(message))
       .then(this.afterPost);
+  }
 
-    function postToHandlers(messageToPost: Message) {
-      self.options.log(`Posting ${messageToPost.type}`);
-      const handlers = self.handlersFor(messageToPost.type);
-      checkHandlerRequirements(messageToPost, handlers);
-      if (self.options.exclusiveHandlers) {
-        return postForExclusiveHandlers(messageToPost, handlers);
-      }
-      return postForStandardHandlers(messageToPost, handlers);
+  private postToHandlers(messageToPost: Message) {
+    this.options.log(`Posting ${messageToPost.type}`);
+    const handlers = this.handlersFor(messageToPost.type);
+    this.checkHandlerRequirements(messageToPost, handlers);
+    if (this.options.exclusiveHandlers) {
+      return this.postForExclusiveHandlers(messageToPost, handlers);
     }
+    return this.postForStandardHandlers(messageToPost, handlers);
+  }
 
-    function validatedMessage(messageToValidate: Message): Promise<Message> {
-      try {
-        assert(messageToValidate, "message").toBePresent();
-        assert(messageToValidate.type, "message#type")
-          .toBePresent()
-          .toBeAString();
-        return Promise.resolve(message);
-      } catch (e) {
-        return Promise.reject(e);
-      }
+  private validatedMessage(messageToValidate: Message): Promise<Message> {
+    try {
+      assert(messageToValidate, "message").toBePresent();
+      assert(messageToValidate.type, "message#type")
+        .toBePresent()
+        .toBeAString();
+      return Promise.resolve(messageToValidate);
+    } catch (e) {
+      return Promise.reject(e);
     }
+  }
 
-    function checkHandlerRequirements(
-      messageToCheck: Message,
-      handlers: MessageHandler[]
-    ) {
-      if (handlers.length === 0 && self.options.ensureAtLeastOneHandler) {
-        throw new Error(`No handler for ${messageToCheck.type}`);
-      }
+  private checkHandlerRequirements(
+    messageToCheck: Message,
+    handlers: MessageHandler[]
+  ) {
+    if (handlers.length === 0 && this.options.ensureAtLeastOneHandler) {
+      throw new Error(`No handler for ${messageToCheck.type}`);
     }
+  }
 
-    function postForExclusiveHandlers(
-      messageToPost: Message,
-      handlers: MessageHandler[]
-    ) {
-      if (handlers.length === 0) {
-        return Promise.resolve();
-      }
-      return self.handle(messageToPost, handlers[0]);
+  private postForExclusiveHandlers(
+    messageToPost: Message,
+    handlers: MessageHandler[]
+  ) {
+    if (handlers.length === 0) {
+      return Promise.resolve();
     }
+    return this.handle(messageToPost, handlers[0]);
+  }
 
-    function postForStandardHandlers(
-      messageToPost: Message,
-      handlers: MessageHandler[]
-    ) {
-      if (handlers.length === 0) {
-        return Promise.resolve([]);
-      }
-      if (handlers.length === 1) {
-        return self.handle(messageToPost, handlers[0]).then((r) => [r]);
-      }
-      const handleMessage = (handler: MessageHandler) =>
-        self.handle(messageToPost, handler);
-      return mapToPromises(
-        handleMessage,
-        { concurrency: self.options.handlersConcurrency },
-        handlers
-      );
+  private postForStandardHandlers(
+    messageToPost: Message,
+    handlers: MessageHandler[]
+  ) {
+    if (handlers.length === 0) {
+      return Promise.resolve([]);
     }
+    if (handlers.length === 1) {
+      return this.handle(messageToPost, handlers[0]).then((r) => [r]);
+    }
+    const handleMessage = (handler: MessageHandler) =>
+      this.handle(messageToPost, handler);
+    return mapToPromises(
+      handleMessage,
+      { concurrency: this.options.handlersConcurrency },
+      handlers
+    );
   }
 
   private handle(message: Message, handler: MessageHandler) {
     return this.beforeHandle(message).then(handler).then(this.afterHandle);
   }
 
-  public register(type: string, handler: MessageHandler) {
-    const self = this;
+  public register(type: string, handler: MessageHandler): () => void {
     validateArgs();
     this.options.log(`Registering to ${type}`);
     const handlers = this.handlersFor(type);
-    ensureHandlerExclusivity();
+    this.ensureHandlerExclusivity(handlers, type);
     this.updateHandlers(type, handlers.concat(handler));
-
-    return unregister;
+    return () =>
+      this.updateHandlers(
+        type,
+        this.handlersFor(type).filter((h) => h !== handler)
+      );
 
     function validateArgs() {
       assert(type, "type").toBePresent();
       assert(handler, "handler").toBePresent().toBeAFunction();
     }
+  }
 
-    function ensureHandlerExclusivity() {
-      if (self.options.exclusiveHandlers && handlers.length > 0) {
-        const message =
-          `Won't allow a new handler for type ${type} ` +
-          `since handlers are exclusive`;
-        throw new Error(message);
-      }
-    }
-
-    function unregister() {
-      self.updateHandlers(
-        type,
-        self.handlersFor(type).filter((h) => h !== handler)
-      );
+  private ensureHandlerExclusivity(handlers: MessageHandler[], type: string) {
+    if (this.options.exclusiveHandlers && handlers.length > 0) {
+      const message =
+        `Won't allow a new handler for type ${type} ` +
+        `since handlers are exclusive`;
+      throw new Error(message);
     }
   }
 
-  public unregisterAll(...types: string[]) {
+  public unregisterAll(...types: string[]): void {
     validateArgs();
     types.forEach((type) => this.updateHandlers(type, []));
 
@@ -201,7 +195,7 @@ export class DefaultMessageBus implements MessageBus {
     }
   }
 
-  public handlerCount(type: string) {
+  public handlerCount(type: string): number {
     assert(type, "type").toBeAString();
     return this.handlersFor(type).length;
   }

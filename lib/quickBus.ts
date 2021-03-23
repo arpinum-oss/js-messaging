@@ -3,7 +3,7 @@ import { Message, MessageBus, MessageHandler } from "./types";
 export class QuickBus implements MessageBus {
   private handlerMap = new Map<string, MessageHandler[]>();
 
-  public post(message: Message) {
+  public post(message: Message): Promise<any> {
     try {
       validateArgs();
     } catch (e) {
@@ -22,7 +22,7 @@ export class QuickBus implements MessageBus {
     }
   }
 
-  public register(type: string, handler: MessageHandler) {
+  public register(type: string, handler: MessageHandler): () => void {
     validateArgs();
     const handlers = (this.handlerMap.get(type) || []).concat(handler);
     this.handlerMap.set(type, handlers);
@@ -43,15 +43,15 @@ export class QuickBus implements MessageBus {
     }
   }
 
-  public handlerCount(_: string) {
+  public handlerCount(): number {
     return 0;
   }
 
-  public postAll(_: Message[]) {
+  public postAll(): Promise<any> {
     return Promise.resolve([]);
   }
 
-  public unregisterAll(..._: string[]) {
+  public unregisterAll(): void {
     return;
   }
 }
