@@ -45,14 +45,6 @@
     "@arpinum/promising": "4.2.0"
   },
   "jest": {
-    "transform": {
-      ".ts": "ts-jest"
-    },
-    "testRegex": "/lib/.*\\.spec\\.ts$",
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ]
+    "preset":"ts-jest"
   }
 }
