@@ -4,29 +4,32 @@ import { pipe, mapWithOptions as mapToPromises } from "@arpinum/promising";
 import { Message, MessageBus, MessageHandler } from "./types";
 
 export interface MessageBusOptions {
-  log?: (...args: any[]) => void;
+  log?: (...args: unknown[]) => void;
   exclusiveHandlers?: boolean;
   ensureAtLeastOneHandler?: boolean;
   handlersConcurrency?: number;
-  beforePost?: any[];
-  afterPost?: any[];
-  beforeHandle?: any[];
-  afterHandle?: any[];
+  beforePost?: MessageHookOption[];
+  afterPost?: ResultsHookOption[];
+  beforeHandle?: MessageHookOption[];
+  afterHandle?: ResultHookOption[];
 }
 
-interface MessageBusSafeOptions {
-  log: (...args: any[]) => void;
-  exclusiveHandlers: boolean;
-  ensureAtLeastOneHandler: boolean;
-  handlersConcurrency: number;
-  beforePost: any[];
-  afterPost: any[];
-  beforeHandle: any[];
-  afterHandle: any[];
-}
+export type MessageBusSafeOptions = Required<MessageBusOptions>;
+export type MessageHookOption = (
+  message: Message
+) => Promise<Message> | Message;
+type MessageHook = (message: Message) => Promise<Message>;
+export type ResultHookOption = (result: unknown) => Promise<unknown> | unknown;
+type ResultHook = (result: unknown) => Promise<unknown>;
+export type ResultsHookOption = (
+  result: unknown[]
+) => Promise<unknown[]> | unknown[];
+type ResultsHook = (result: unknown[]) => Promise<unknown[]>;
 
 const defaultOptions: MessageBusSafeOptions = {
-  log: () => undefined as any,
+  log: () => {
+    //noop
+  },
   exclusiveHandlers: false,
   ensureAtLeastOneHandler: false,
   handlersConcurrency: 3,
@@ -39,10 +42,10 @@ const defaultOptions: MessageBusSafeOptions = {
 export class DefaultMessageBus implements MessageBus {
   private options: MessageBusSafeOptions;
   private handlerMap: Map<string, MessageHandler[]>;
-  private beforeHandle: (m: Message) => Promise<Message>;
-  private afterHandle: (r: any) => Promise<any>;
-  private beforePost: (m: Message) => Promise<Message>;
-  private afterPost: (r: any) => Promise<any>;
+  private readonly beforeHandle: MessageHook;
+  private readonly afterHandle: ResultHook;
+  private readonly beforePost: MessageHook;
+  private readonly afterPost: ResultsHook;
 
   constructor(options: MessageBusOptions = {}) {
     this.validateOptions(options);
@@ -74,7 +77,7 @@ export class DefaultMessageBus implements MessageBus {
     assert(options.afterPost, "options#afterPost").toBeAnArray();
   }
 
-  public postAll(messages: Message[]): Promise<any> {
+  public postAll(messages: Message[]): Promise<unknown[]> {
     if (messages.length === 0) {
       return Promise.resolve([]);
     }
@@ -88,7 +91,7 @@ export class DefaultMessageBus implements MessageBus {
     );
   }
 
-  public post(message: Message): Promise<any> {
+  public post(message: Message): Promise<unknown[]> {
     return this.validatedMessage(message)
       .then(this.beforePost)
       .then((message) => this.postToHandlers(message))
@@ -126,14 +129,15 @@ export class DefaultMessageBus implements MessageBus {
     }
   }
 
-  private postForExclusiveHandlers(
+  private async postForExclusiveHandlers(
     messageToPost: Message,
     handlers: MessageHandler[]
   ) {
     if (handlers.length === 0) {
-      return Promise.resolve();
+      return Promise.resolve([]);
     }
-    return this.handle(messageToPost, handlers[0]);
+    const result = await this.handle(messageToPost, handlers[0]);
+    return [result];
   }
 
   private postForStandardHandlers(

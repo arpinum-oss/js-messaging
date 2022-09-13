@@ -1,16 +1,16 @@
-export interface Message<TPayload = any> {
+export interface Message<TPayload = unknown> {
   type: string;
-  payload: TPayload;
+  payload?: TPayload;
 }
 
-export type MessageHandler<TPayload = any, TResult = any> = (
+export type MessageHandler<TPayload = unknown, TResult = unknown> = (
   message: Message<TPayload>
 ) => TResult;
 
 export interface MessageBus {
   handlerCount: (type: string) => number;
-  post: (message: Message) => Promise<any>;
-  postAll: (message: Message[]) => Promise<any>;
+  post: (message: Message) => Promise<unknown[]>;
+  postAll: (message: Message[]) => Promise<unknown[]>;
   register: (type: string, handler: MessageHandler) => () => void;
   unregisterAll: (...types: string[]) => void;
 }

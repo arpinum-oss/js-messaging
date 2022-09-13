@@ -6,7 +6,7 @@ export interface MessageCreator<Payload> {
   (payload: Payload): Message<Payload>;
 }
 
-export function messageCreator<Payload = any>(
+export function messageCreator<Payload = unknown>(
   type: string
 ): MessageCreator<Payload> {
   return Object.assign(
@@ -21,14 +21,13 @@ export function messageCreator<Payload = any>(
 export interface VoidMessageCreator {
   type: string;
 
-  (): Message<void>;
+  (): Message;
 }
 
 export function voidMessageCreator(type: string): VoidMessageCreator {
   return Object.assign(
     () => ({
       type,
-      payload: undefined,
     }),
     typeInformation(type)
   );

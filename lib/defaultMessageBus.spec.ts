@@ -126,13 +126,13 @@ describe("Message bus", () => {
       );
     });
 
-    it("should return undefined when no handler and bus handlers are exclusive", () => {
+    it("should return empty results when no handler and bus handlers are exclusive", () => {
       const myBus = new DefaultMessageBus({ exclusiveHandlers: true });
 
       const post = myBus.post({ type: "MyMessage", payload: undefined });
 
       return post.then((result) => {
-        expect(result).toBeUndefined();
+        expect(result).toEqual([]);
       });
     });
 
@@ -153,7 +153,7 @@ describe("Message bus", () => {
       const post = myBus.post({ type: "MyMessage", payload: undefined });
 
       return post.then((result) => {
-        expect(result).toEqual("the handler");
+        expect(result).toEqual(["the handler"]);
       });
     });
 
@@ -322,13 +322,14 @@ describe("Message bus", () => {
   describe("having some before handle decorators ", () => {
     it("should execute them before message handling", () => {
       const beforeHandle = [
+        (m: Message) => {
+          return Object.assign({}, m, {
+            payload: `${m.payload}|first|`,
+          });
+        },
         (m: Message) =>
           Object.assign({}, m, {
-            payload: { order: `${m.payload.order}|first|` },
-          }),
-        (m: Message) =>
-          Object.assign({}, m, {
-            payload: { order: `${m.payload.order}|second|` },
+            payload: `${m.payload}|second|`,
           }),
       ];
       const myBus = new DefaultMessageBus({ beforeHandle });
@@ -337,16 +338,14 @@ describe("Message bus", () => {
         postedMessage = m;
         return Promise.resolve();
       });
-      const message = { type: "MyMessage", payload: { order: "|initial|" } };
+      const message = { type: "MyMessage", payload: "|initial|" };
 
       const post = myBus.post(message);
 
       return post.then(() => {
         expect(postedMessage).toEqual({
           type: message.type,
-          payload: {
-            order: "|initial||first||second|",
-          },
+          payload: "|initial||first||second|",
         });
       });
     });
@@ -355,11 +354,11 @@ describe("Message bus", () => {
       const beforeHandle = [
         (m: Message) =>
           Object.assign({}, m, {
-            payload: { order: `${m.payload.order}|first|` },
+            payload: `${m.payload}|first|`,
           }),
         (m: Message) =>
           Object.assign({}, m, {
-            payload: { order: `${m.payload.order}|second|` },
+            payload: `${m.payload}|second|`,
           }),
       ];
       const myBus = new DefaultMessageBus({ beforeHandle });
@@ -368,14 +367,14 @@ describe("Message bus", () => {
         postedMessage = m;
         return Promise.resolve();
       });
-      const message = { type: "MyMessage", payload: { order: "|initial|" } };
+      const message = { type: "MyMessage", payload: "|initial|" };
 
       const post = myBus.post(message);
 
       return post.then(() => {
         const expected = {
           type: "MyMessage",
-          payload: { order: "|initial||first||second|" },
+          payload: "|initial||first||second|",
         };
         expect(postedMessage).toEqual(expected);
       });
@@ -385,21 +384,16 @@ describe("Message bus", () => {
   describe("having some after handle decorators ", () => {
     it("should execute them after message handling", () => {
       const afterHandle = [
-        (result: any) => Object.assign({}, { order: `${result.order}|first|` }),
-        (result: any) =>
-          Object.assign({}, { order: `${result.order}|second|` }),
+        (result: any) => `${result}|first|`,
+        (result: any) => `${result}|second|`,
       ];
       const myBus = new DefaultMessageBus({ afterHandle });
-      myBus.register("MyMessage", () =>
-        Promise.resolve({ order: "|initial|" })
-      );
+      myBus.register("MyMessage", () => Promise.resolve("|initial|"));
 
       const post = myBus.post({ type: "MyMessage", payload: undefined });
 
       return post.then(([result]) => {
-        expect(result).toEqual({
-          order: "|initial||first||second|",
-        });
+        expect(result).toEqual("|initial||first||second|");
       });
     });
   });
@@ -409,11 +403,11 @@ describe("Message bus", () => {
       const beforePost = [
         (m: Message) =>
           Object.assign({}, m, {
-            payload: { order: `${m.payload.order}|first|` },
+            payload: `${m.payload}|first|`,
           }),
         (m: Message) =>
           Object.assign({}, m, {
-            payload: { order: `${m.payload.order}|second|` },
+            payload: `${m.payload}|second|`,
           }),
       ];
       const myBus = new DefaultMessageBus({ beforePost });
@@ -422,16 +416,14 @@ describe("Message bus", () => {
         postedMessage = m;
         return Promise.resolve();
       });
-      const message = { type: "MyMessage", payload: { order: "|initial|" } };
+      const message = { type: "MyMessage", payload: "|initial|" };
 
       const post = myBus.post(message);
 
       return post.then(() => {
         expect(postedMessage).toEqual({
           type: message.type,
-          payload: {
-            order: "|initial||first||second|",
-          },
+          payload: "|initial||first||second|",
         });
       });
     });
@@ -440,24 +432,16 @@ describe("Message bus", () => {
   describe("having some after post decorators ", () => {
     it("should execute them after message post", () => {
       const afterPost = [
-        ([result]: any[]) => [
-          Object.assign({}, { order: `${result.order}|first|` }),
-        ],
-        ([result]: any[]) => [
-          Object.assign({}, { order: `${result.order}|second|` }),
-        ],
+        ([result]: any[]) => [`${result}|first|`],
+        ([result]: any[]) => [`${result}|second|`],
       ];
       const myBus = new DefaultMessageBus({ afterPost });
-      myBus.register("MyMessage", () =>
-        Promise.resolve({ order: "|initial|" })
-      );
+      myBus.register("MyMessage", () => Promise.resolve("|initial|"));
 
       const post = myBus.post({ type: "MyMessage", payload: undefined });
 
       return post.then(([result]) => {
-        expect(result).toEqual({
-          order: "|initial||first||second|",
-        });
+        expect(result).toEqual("|initial||first||second|");
       });
     });
   });

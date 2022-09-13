@@ -79,7 +79,7 @@ A message should be a plain JavaScript object, preferably immutable.
 ## bus.post(message)
 
 - `message: Message` - [Message] to post.
-- returns: `Promise<any>` - Contains an array with all handlers results or a single result if handlers are exclusive.
+- returns: `Promise<any>` - Contains an array with all handlers results.
 
 Posts a message to registered handlers.
 
