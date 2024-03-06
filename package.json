@@ -1,6 +1,6 @@
 {
   "name": "@arpinum/messaging",
-  "version": "4.0.3",
+  "version": "4.0.4",
   "description": "Simple message bus",
   "main": "build/index.js",
   "types": "build/index.d.ts",
