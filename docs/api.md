@@ -5,61 +5,23 @@
   - `exclusiveHandlers?: boolean` - Allows only one handler per message. Defaults to false.
   - `ensureAtLeastOneHandler?: boolean` - Throws error if a posted message is not handled. Defaults to false.
   - `handlersConcurrency?: number` - Limits handler execution in parallel. Defaults to 3.
-  - `beforePost?: Array<function>` - Execute functions before posting a message in order to apply some transformations to the message.
-  - `afterPost?: Array<function>` - Execute functions after posting (and fully handling) a message in order to apply some transformations to the results.
-  - `beforeHandle?: Array<function>` - Execute functions before handling a message in order to apply some transformations to the message.
-  - `afterHandle?: Array<function>` - Execute functions after handling a message in order to apply some transformations to the result.
+  - `beforePost?: function[]` - Execute functions before posting a message in order to apply some transformations to
+    the message.
+  - `afterPost?: function[]` - Execute functions after posting (and fully handling) a message in order to apply some
+    transformations to the results.
+  - `beforeHandle?: function[]` - Execute functions before handling a message in order to apply some transformations
+    to the message.
+  - `afterHandle?: function[]` - Execute functions after handling a message in order to apply some transformations to
+    the result.
 - returns: `MessageBus`
 
 Creates a [MessageBus] object that posts messages to registered handlers.
 
-Example:
+Examples:
 
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
-
-const bus = createMessageBus();
-bus.register("PrintText", (message) => console.log(message.payload));
-bus.post({ type: "PrintText", payload: "Hello world" });
-```
-
-Before handle example:
-
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
-
-const withUpperCaseText = (m) =>
-  Object.assign({}, m, { payload: m.payload.toUpperCase() });
-const withoutSpaceInText = (m) =>
-  Object.assign({}, m, { payload: m.payload.replace(" ", "-") });
-
-const bus = createMessageBus({
-  beforeHandle: [withUpperCaseText, withoutSpaceInText],
-});
-bus.register("PrintText", (message) => console.log(message.payload));
-bus.post({ type: "PrintText", payload: "Hello world" });
-
-// HELLO-WORLD
-```
-
-After handle example:
-
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
-
-const upperCaseText = (text) => text.toUpperCase();
-const withoutSpace = (text) => text.replace(" ", "-");
-
-const bus = createMessageBus({
-  afterHandle: [upperCaseText, withoutSpace],
-});
-bus.register("ReturnText", (message) => message.payload);
-bus
-  .post({ type: "ReturnText", payload: "Hello world" })
-  .then(([text]) => console.log(text));
-
-// HELLO-WORLD
-```
+- [bus creation](../examples/basic.ts)
+- [before handle](../examples/beforeHandle.ts)
+- [after handle](../examples/afterHandle.ts)
 
 # Message interface
 
@@ -68,9 +30,11 @@ A message must have the following properties:
 - `type: string`
 - `payload?: any`
 
-A message may represent an event (UserSignedUp, ProfileCreated), a command (SignUserUp, CreateProfile) or a query (FindUsers, FindProfileById), following [CQRS] semantic.
+A message may represent an event (UserSignedUp, ProfileCreated), a command (SignUserUp, CreateProfile) or a query (
+FindUsers, FindProfileById), following [CQRS] semantic.
 
-The payload can be anything like a string, integer or object. A self-describing object like `{userId: 'some-uuid'}` might be more useful than just `'some-uuid'` though.
+The payload can be anything like a string, integer or object. A self-describing object like `{userId: 'some-uuid'}`
+might be more useful than just `'some-uuid'` though.
 
 A message should be a plain JavaScript object, preferably immutable.
 
@@ -85,8 +49,8 @@ Posts a message to registered handlers.
 
 Example:
 
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
+```ts
+import { createMessageBus } from "@arpinum/messaging";
 
 const bus = createMessageBus();
 bus.post({ type: "PrintText", payload: "Hello world" });
@@ -94,15 +58,15 @@ bus.post({ type: "PrintText", payload: "Hello world" });
 
 ## bus.postAll(messages)
 
-- `message: Array<Message>` - [Message] objects to post.
-- returns: `Promise<Array<any>>` - Contains an array with all post results. See `bus.post` method.
+- `message: Message[]` - [Message] objects to post.
+- returns: `Promise<any[]>` - Contains an array with all post results. See `bus.post` method.
 
 Posts multiple messages to respective registered handlers.
 
 Example:
 
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
+```ts
+import { createMessageBus } from "@arpinum/messaging";
 
 const bus = createMessageBus();
 const messages = [
@@ -122,8 +86,8 @@ Registers a handler for the provided message type.
 
 Example:
 
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
+```ts
+import { createMessageBus } from "@arpinum/messaging";
 
 const bus = createMessageBus();
 bus.register("PrintText", (message) => console.log(message.payload));
@@ -138,8 +102,8 @@ Unregister all handlers for given message types.
 
 Example:
 
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
+```ts
+import { createMessageBus } from "@arpinum/messaging";
 
 const bus = createMessageBus();
 bus.register("PrintText", (message) => console.log(message.payload));
@@ -158,8 +122,8 @@ Returns the number of handlers for the given message type.
 
 Example:
 
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
+```ts
+import { createMessageBus } from "@arpinum/messaging";
 
 const bus = createMessageBus();
 bus.register("PrintText", (message) => console.log("1", message.payload));

@@ -13,14 +13,12 @@ npm install @arpinum/messaging --save
 
 ## Example
 
-```javascript
-const { createMessageBus } = require("@arpinum/messaging");
+```ts
+import { createMessageBus } from "@arpinum/messaging";
 
 const bus = createMessageBus();
 bus.register("PrintText", (message) => console.log(message.payload));
-bus.post({ type: "PrintText", payload: "Hello world" });
-
-// Hello world
+bus.post({ type: "PrintText", payload: "Hello world" }).catch(console.error);
 ```
 
 ## Docs
