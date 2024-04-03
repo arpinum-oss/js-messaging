@@ -3,7 +3,7 @@ import { Message, MessageBus, MessageHandler } from "./types";
 export class QuickBus implements MessageBus {
   private handlerMap = new Map<string, MessageHandler[]>();
 
-  public post(message: Message): Promise<any> {
+  public post(message: Message): Promise<unknown[]> {
     try {
       validateArgs();
     } catch (e) {
@@ -47,7 +47,7 @@ export class QuickBus implements MessageBus {
     return 0;
   }
 
-  public postAll(): Promise<any> {
+  public postAll(): Promise<unknown[]> {
     return Promise.resolve([]);
   }
 
