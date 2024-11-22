@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 4.0.5 - 2024-11-22
+
+- using custom code instead of library for type assertions
+- dependencies update
+
+## 4.0.4 - 2024-03-06
+
+### Fixed
+
+- more reliable typing
+- dependencies update
+
+### Changed
+
+- coding style in code examples
+
 ## 4.0.3 - 2022-03-24
 
 ### Fixed
