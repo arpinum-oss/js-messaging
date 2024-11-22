@@ -2,11 +2,11 @@ import { createMessageBus, ResultsHookOption } from "../lib";
 
 const upperCaseText: ResultsHookOption = (textsMaybe) =>
   textsMaybe.map((textMaybe) =>
-    typeof textMaybe === "string" ? textMaybe.toUpperCase() : textMaybe
+    typeof textMaybe === "string" ? textMaybe.toUpperCase() : textMaybe,
   );
 const withoutSpace: ResultsHookOption = (textsMaybe) =>
   textsMaybe.map((textMaybe) =>
-    typeof textMaybe === "string" ? textMaybe.replace(" ", "-") : textMaybe
+    typeof textMaybe === "string" ? textMaybe.replace(" ", "-") : textMaybe,
   );
 
 const bus = createMessageBus({

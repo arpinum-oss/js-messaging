@@ -70,7 +70,7 @@ describe("Message bus", () => {
       return post.then(
         () => Promise.reject(new Error("Should fail")),
         (rejection) =>
-          expect(rejection.message).toEqual("message must be present")
+          expect(rejection.message).toEqual("message must be present"),
       );
     });
 
@@ -80,7 +80,7 @@ describe("Message bus", () => {
       return post.then(
         () => Promise.reject(new Error("Should fail")),
         (rejection) =>
-          expect(rejection.message).toEqual("message#type must be present")
+          expect(rejection.message).toEqual("message#type must be a string"),
       );
     });
 
@@ -90,7 +90,7 @@ describe("Message bus", () => {
       return post.then(
         () => Promise.reject(new Error("Should fail")),
         (rejection) =>
-          expect(rejection.message).toEqual("message#type must be a string")
+          expect(rejection.message).toEqual("message#type must be a string"),
       );
     });
 
@@ -122,7 +122,7 @@ describe("Message bus", () => {
         () => Promise.reject(new Error("Should fail")),
         (rejection) => {
           expect(rejection.message).toEqual("No handler for MyMessage");
-        }
+        },
       );
     });
 
@@ -161,11 +161,11 @@ describe("Message bus", () => {
       const posts: string[] = [];
       bus.register(
         "MyRightMessage",
-        wrap(() => posts.push("handler1"))
+        wrap(() => posts.push("handler1")),
       );
       bus.register(
         "MyWrongMessage",
-        wrap(() => posts.push("handler2"))
+        wrap(() => posts.push("handler2")),
       );
 
       const post = bus.post({ type: "MyRightMessage", payload: undefined });
@@ -244,7 +244,7 @@ describe("Message bus", () => {
     it("should ensure handler is defined", () => {
       const register = () => bus.register("MyMessage", undefined as any);
 
-      expect(register).toThrow("handler must be present");
+      expect(register).toThrow("handler must be a function");
     });
 
     it("should ensure handler is a function", () => {
@@ -268,7 +268,7 @@ describe("Message bus", () => {
     it("won't post a message to it anymore", () => {
       bus.register("MyMessage", () => Promise.resolve("handler1"));
       const unregister = bus.register("MyMessage", () =>
-        Promise.resolve("handler2")
+        Promise.resolve("handler2"),
       );
 
       unregister();

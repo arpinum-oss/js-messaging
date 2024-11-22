@@ -4,7 +4,7 @@ export interface Message<TPayload = unknown> {
 }
 
 export type MessageHandler<TPayload = unknown, TResult = unknown> = (
-  message: Message<TPayload>
+  message: Message<TPayload>,
 ) => TResult;
 
 export interface MessageBus {

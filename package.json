@@ -40,7 +40,6 @@
     "typescript-eslint": "^7.5.0"
   },
   "dependencies": {
-    "@arpinum/defender": "^1.0.7",
     "@arpinum/promising": "^4.2.2"
   },
   "jest": {

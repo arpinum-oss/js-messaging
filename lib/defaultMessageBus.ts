@@ -1,5 +1,13 @@
-import { assert } from "@arpinum/defender";
 import { pipe, mapWithOptions as mapToPromises } from "@arpinum/promising";
+import {
+  assertFunction,
+  assertOptionalArray,
+  assertOptionalBoolean,
+  assertOptionalFunction,
+  assertOptionalNumber,
+  assertPresent,
+  assertString,
+} from "./asserts";
 
 import { Message, MessageBus, MessageHandler } from "./types";
 
@@ -16,13 +24,13 @@ export interface MessageBusOptions {
 
 export type MessageBusSafeOptions = Required<MessageBusOptions>;
 export type MessageHookOption = (
-  message: Message
+  message: Message,
 ) => Promise<Message> | Message;
 type MessageHook = (message: Message) => Promise<Message>;
 export type ResultHookOption = (result: unknown) => Promise<unknown> | unknown;
 type ResultHook = (result: unknown) => Promise<unknown>;
 export type ResultsHookOption = (
-  result: unknown[]
+  result: unknown[],
 ) => Promise<unknown[]> | unknown[];
 type ResultsHook = (result: unknown[]) => Promise<unknown[]>;
 
@@ -58,23 +66,23 @@ export class DefaultMessageBus implements MessageBus {
   }
 
   private validateOptions(options: MessageBusOptions) {
-    assert(options.log, "options#log").toBeAFunction();
-    assert(
+    assertOptionalFunction(options.log, "options#log");
+    assertOptionalBoolean(
       options.exclusiveHandlers,
-      "options#exclusiveHandlers"
-    ).toBeABoolean();
-    assert(
+      "options#exclusiveHandlers",
+    );
+    assertOptionalBoolean(
       options.ensureAtLeastOneHandler,
-      "options#ensureAtLeastOneHandler"
-    ).toBeABoolean();
-    assert(
+      "options#ensureAtLeastOneHandler",
+    );
+    assertOptionalNumber(
       options.handlersConcurrency,
-      "options#handlersConcurrency"
-    ).toBeANumber();
-    assert(options.beforePost, "options#beforePost").toBeAnArray();
-    assert(options.beforeHandle, "options#beforeHandle").toBeAnArray();
-    assert(options.afterHandle, "options#afterHandle").toBeAnArray();
-    assert(options.afterPost, "options#afterPost").toBeAnArray();
+      "options#handlersConcurrency",
+    );
+    assertOptionalArray(options.beforePost, "options#beforePost");
+    assertOptionalArray(options.beforeHandle, "options#beforeHandle");
+    assertOptionalArray(options.afterHandle, "options#afterHandle");
+    assertOptionalArray(options.afterPost, "options#afterPost");
   }
 
   public postAll(messages: Message[]): Promise<unknown[]> {
@@ -87,7 +95,7 @@ export class DefaultMessageBus implements MessageBus {
     return mapToPromises(
       (message: Message) => this.post(message),
       { concurrency: 3 },
-      messages
+      messages,
     );
   }
 
@@ -110,10 +118,8 @@ export class DefaultMessageBus implements MessageBus {
 
   private validatedMessage(messageToValidate: Message): Promise<Message> {
     try {
-      assert(messageToValidate, "message").toBePresent();
-      assert(messageToValidate.type, "message#type")
-        .toBePresent()
-        .toBeAString();
+      assertPresent(messageToValidate, "message");
+      assertString(messageToValidate.type, "message#type");
       return Promise.resolve(messageToValidate);
     } catch (e) {
       return Promise.reject(e);
@@ -122,7 +128,7 @@ export class DefaultMessageBus implements MessageBus {
 
   private checkHandlerRequirements(
     messageToCheck: Message,
-    handlers: MessageHandler[]
+    handlers: MessageHandler[],
   ) {
     if (handlers.length === 0 && this.options.ensureAtLeastOneHandler) {
       throw new Error(`No handler for ${messageToCheck.type}`);
@@ -131,7 +137,7 @@ export class DefaultMessageBus implements MessageBus {
 
   private async postForExclusiveHandlers(
     messageToPost: Message,
-    handlers: MessageHandler[]
+    handlers: MessageHandler[],
   ) {
     if (handlers.length === 0) {
       return Promise.resolve([]);
@@ -142,7 +148,7 @@ export class DefaultMessageBus implements MessageBus {
 
   private postForStandardHandlers(
     messageToPost: Message,
-    handlers: MessageHandler[]
+    handlers: MessageHandler[],
   ) {
     if (handlers.length === 0) {
       return Promise.resolve([]);
@@ -155,7 +161,7 @@ export class DefaultMessageBus implements MessageBus {
     return mapToPromises(
       handleMessage,
       { concurrency: this.options.handlersConcurrency },
-      handlers
+      handlers,
     );
   }
 
@@ -172,12 +178,12 @@ export class DefaultMessageBus implements MessageBus {
     return () =>
       this.updateHandlers(
         type,
-        this.handlersFor(type).filter((h) => h !== handler)
+        this.handlersFor(type).filter((h) => h !== handler),
       );
 
     function validateArgs() {
-      assert(type, "type").toBePresent();
-      assert(handler, "handler").toBePresent().toBeAFunction();
+      assertPresent(type, "type");
+      assertFunction(handler, "handler");
     }
   }
 
@@ -195,12 +201,12 @@ export class DefaultMessageBus implements MessageBus {
     types.forEach((type) => this.updateHandlers(type, []));
 
     function validateArgs() {
-      types.forEach((type, i) => assert(type, `types[${i}]`).toBeAString());
+      types.forEach((type, i) => assertString(type, `types[${i}]`));
     }
   }
 
   public handlerCount(type: string): number {
-    assert(type, "type").toBeAString();
+    assertString(type, "type");
     return this.handlersFor(type).length;
   }
 

@@ -7,14 +7,14 @@ export interface MessageCreator<Payload> {
 }
 
 export function messageCreator<Payload = unknown>(
-  type: string
+  type: string,
 ): MessageCreator<Payload> {
   return Object.assign(
     (payload: Payload) => ({
       type,
       payload,
     }),
-    typeInformation(type)
+    typeInformation(type),
   );
 }
 
@@ -29,7 +29,7 @@ export function voidMessageCreator(type: string): VoidMessageCreator {
     () => ({
       type,
     }),
-    typeInformation(type)
+    typeInformation(type),
   );
 }
 
