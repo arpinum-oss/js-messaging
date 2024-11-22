@@ -30,7 +30,7 @@ describe("Message creator factory", () => {
   });
 
   it("could have no payload type argument", () => {
-    const sayHello = messageCreator<void>("SAY_HELLO");
+    const sayHello = messageCreator("SAY_HELLO");
 
     const message = sayHello(undefined);
 
