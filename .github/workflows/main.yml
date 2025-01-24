@@ -9,10 +9,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: 'package.json'
-
-      - run: npm install
-      - run: npm test
+      - uses: cachix/install-nix-action@v27
+      - run: nix develop --command npm install
+      - run: nix develop --command npm test
